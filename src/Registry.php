@@ -33,7 +33,7 @@ class Registry
 
         if($minify === 'minify'){
             $link .= "&minify=true";
-        }else if ($minify === ''){
+        }else if ($minify === 'packer'){
             $link .= "&packer=true";
         }
 
