@@ -24,6 +24,26 @@ class Registry
     }
 
     /**
+     * @param $files
+     */
+    public static function addJsFiles($files)
+    {
+        foreach($files as $file){
+            self::$jsFiles[] = $file;
+        }
+    }
+
+    /**
+     * @param $files
+     */
+    public static function addCssFiles($files)
+    {
+        foreach($files as $file){
+            self::$cssFiles[] = $file;
+        }
+    }
+
+    /**
      * @param $minify
      * @return string
      */
