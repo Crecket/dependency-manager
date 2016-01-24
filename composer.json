@@ -1,0 +1,21 @@
+{
+  "name": "crecket/dependency-manager",
+  "description": "Resource dependency manager",
+  "license": "WTFPL",
+  "homepage": "https://github.com/Crecket/dependency-manager",
+  "authors": [
+    {
+      "name": "Gregory Goijaerts",
+      "email": "crecketgaming@gmail.com"
+    }
+  ],
+  "require": {
+    "meenie/Munee": "^1.7",
+    "twig/twig": "^1.23"
+  },
+  "autoload": {
+    "psr-4": {
+      "Crecket\\DependencyManager\\": "src/"
+    }
+  }
+}
