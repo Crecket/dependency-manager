@@ -24,21 +24,35 @@ class Registry
     }
 
     /**
-     * @param $munee_location
+     * @param $minify
      * @return string
      */
-    public static function getJsLink($munee_location)
+    public static function getJsLink($minify)
     {
-        return $munee_location . "?files=" . implode(',', self::$jsFiles);
+        $link = implode(',', self::$jsFiles);
+
+        if($minify === 'minify'){
+            $link .= "&minify=true";
+        }else if ($minify === ''){
+            $link .= "&packer=true";
+        }
+
+        return $link;
     }
 
     /**
-     * @param $munee_location
+     * @param $minify
      * @return string
      */
-    public static function getCssLink($munee_location)
+    public static function getCssLink($minify)
     {
-        return $munee_location . "?files=" . implode(',', self::$cssFiles);
+        $link = implode(',', self::$cssFiles);
+
+        if($minify === 'minify'){
+            $link .= "&minify=true";
+        }
+
+        return $link;
     }
 
 }

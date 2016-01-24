@@ -1,6 +1,7 @@
 # custom-twig-extension
 
 ## Introduction
+
 A simple and small dependency manager for javascript and CSS files using [meenie/Munee](https://github.com/meenie/munee).
 
 ## Requirements
@@ -31,7 +32,7 @@ Crecket\DependencyManager\Registry::addCssFile('testFile.css');
 In your twig template
 
 ```
-{{ getJsList('/munee_file_location.php') }}
-{{ getCssList('/munee_file_location.php') }}
-```
+<script src="/munee.php?files={{ getJsList('packer') }}">
 
+<link href="/munee.php?files={{ getCssList('minify') }}" rel="stylesheet">
+```

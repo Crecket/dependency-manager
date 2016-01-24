@@ -19,11 +19,11 @@ class Response extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('getJsLink', function ($munee_location) {
-                return Registry::getJsLink($munee_location);
+            new \Twig_SimpleFunction('getJsLink', function ($minify) {
+                return Registry::getJsLink($minify);
             }),
-            new \Twig_SimpleFunction('getCssLink', function ($munee_location) {
-                return Registry::getCssLink($munee_location);
+            new \Twig_SimpleFunction('getCssLink', function ($minify) {
+                return Registry::getCssLink($minify);
             }),
         );
     }
