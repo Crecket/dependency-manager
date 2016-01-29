@@ -31,7 +31,7 @@ final class Response
             die('Missing caching target location');
         }
 
-        $this->cache = new FilesystemCache($_SERVER['DOCUMENT_ROOT'] . $this->options['Cache']);
+        $this->cache = new FilesystemCache(Constant('ROOT') . $this->options['Cache']);
         $this->cache->setNamespace('crecket_dependency_loader');
 
         if (!isset($_GET['files'])) {
@@ -125,7 +125,7 @@ final class Response
                 if (isset($this->options['DirWhitelist']) && count($this->options['DirWhitelist']) > 0) {
                     $found = false;
                     foreach ($this->options['DirWhitelist'] as $folder) {
-                        $tempFolder = (($folder[0] === "/") ? $_SERVER['DOCUMENT_ROOT'] . substr($folder, 1, strlen($folder)) : $_SERVER['DOCUMENT_ROOT'] . $folder);
+                        $tempFolder = (($folder[0] === "/") ? Constant('ROOT') . $folder : Constant('ROOT') . "/" . $folder);
                         if ($tempFolder === dirname($fileinfo['path'])) {
                             $found = true;; // File is located in whitelist
                             break;
@@ -134,7 +134,7 @@ final class Response
                     if (!$found) {
                         // File isn't located in whitelisted folder, return 403
                         Utilities::statusCode(403, 'Access Denied');
-                        echo 'The following file is not inside a whitelisted folder: ' . $fileinfo['path'] . " --- " . dirname($fileinfo['path']);
+                        echo 'The following file is not inside a whitelisted folder: ' . $fileinfo['path'];
                         return false;
                     }
                 }
@@ -171,7 +171,7 @@ final class Response
      */
     private function fileInfo($path)
     {
-        $path = (($path[0] === "/") ? $_SERVER['DOCUMENT_ROOT'] . substr($path, 1, strlen($path)) : $_SERVER['DOCUMENT_ROOT'] . $path);
+        $path = (($path[0] === "/") ? Constant('ROOT') . $path : Constant('ROOT') . "/" . $path);
         if (file_exists($path)) {
             return array(
                 'path' => $path,
