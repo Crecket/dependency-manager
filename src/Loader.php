@@ -1,11 +1,14 @@
 <?php
-namespace Crecket\DependencyManager;
 
-class Registry
+Namespace Crecket\DependencyManager;
+
+class Loader
 {
 
     private static $jsFiles = array();
     private static $cssFiles = array();
+
+    private static $secret = false;
 
     /**
      * @param $file
@@ -28,7 +31,7 @@ class Registry
      */
     public static function addJsFiles($files)
     {
-        foreach($files as $file){
+        foreach ($files as $file) {
             self::$jsFiles[] = $file;
         }
     }
@@ -38,7 +41,7 @@ class Registry
      */
     public static function addCssFiles($files)
     {
-        foreach($files as $file){
+        foreach ($files as $file) {
             self::$cssFiles[] = $file;
         }
     }
@@ -47,14 +50,18 @@ class Registry
      * @param $minify
      * @return string
      */
-    public static function getJsLink($minify)
+    public static function getJsLink($minify = false)
     {
-        $link = implode(',', self::$jsFiles);
+        $list = implode(',', self::$jsFiles);
 
-        if($minify === 'minify'){
+        $link = "?files=" . $list;
+
+        if (self::$secret !== false) {
+            $link .= "&secret=" . md5($list . self::$secret);
+        }
+
+        if ($minify === true) {
             $link .= "&minify=true";
-        }else if ($minify === 'packer'){
-            $link .= "&packer=true";
         }
 
         return $link;
@@ -64,15 +71,29 @@ class Registry
      * @param $minify
      * @return string
      */
-    public static function getCssLink($minify)
+    public static function getCssLink($minify = false)
     {
-        $link = implode(',', self::$cssFiles);
+        $list = implode(',', self::$cssFiles);
 
-        if($minify === 'minify'){
+        $link = "?files=" . $list;
+
+        if (self::$secret !== false) {
+            $link .= "&secret=" . md5($list . self::$secret);
+        }
+
+        if ($minify === true) {
             $link .= "&minify=true";
         }
 
         return $link;
+    }
+
+    /**
+     * @param $secret
+     */
+    public static function Secret($secret)
+    {
+        self::$secret = $secret;
     }
 
 }
