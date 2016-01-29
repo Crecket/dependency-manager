@@ -16,6 +16,8 @@ final class Response
     private $cache;
     private $response_type = false;
 
+    public $options;
+
     /**
      * Response constructor.
      * @param $options
@@ -23,13 +25,14 @@ final class Response
      */
     public function __construct($options)
     {
+        $this->options = $options;
 
-        if (empty($options['Cache'])) {
-            throw new \Exception('Missing caching target location');
+        if (empty($this->options['Cache'])) {
+            die('Missing caching target location');
         }
 
-        $this->cache = new FilesystemCache($_SERVER['DOCUMENT_ROOT'] . $options['Cache']);
-        $this->cache->setNamespace('dependency_loader');
+        $this->cache = new FilesystemCache($_SERVER['DOCUMENT_ROOT'] . $this->options['Cache']);
+        $this->cache->setNamespace('crecket_dependency_loader');
 
         if (!isset($_GET['files'])) {
             return false;
@@ -37,20 +40,28 @@ final class Response
 
         $this->file_data = $this->fileList($_GET['files']);
 
+
+        if ($this->file_data === false) {
+
+            Utilities::sendHeaders();
+            exit;
+        }
+
         if (isset($_GET['minify'])) {
             $this->minify = true;
         }
 
-        if (isset($options['Secret']) && $options['Secret'] !== false) {
+        if (isset($this->options['Secret']) && $options['Secret'] !== false) {
             // Check if secret is set and if it matches the private key
-            if (!isset($_GET['secret']) || $_GET['secret'] !== md5($_GET['files'] . $options['Secret'])) {
-                throw new \Exception('Invalid request');
+            if (!isset($_GET['secret']) || $_GET['secret'] !== md5($_GET['files'] . $this->options['Secret'])) {
+                die('Invalid request');
             }
         }
 
         $contents = $this->getCollection();
 
         $this->setHeaders($contents['last_modified']);
+        Utilities::sendHeaders();
 
         echo $contents['contents'];
     }
@@ -78,7 +89,6 @@ final class Response
                 } else if (isset($this->response_type['js'])) {
                     $contents = Minifier::minify($contents, array('flaggedComments' => false));
                 }
-
             }
 
             $data = array(
@@ -105,32 +115,50 @@ final class Response
         foreach ($list as $file) {
 
             $fileinfo = $this->fileInfo($file);
-
             if ($fileinfo !== false) {
 
                 if ($this->response_type !== false && !isset($this->response_type[$fileinfo['file_type']])) {
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new \Exception('The following file isn\'t the correct type for this request: ' . $fileinfo['path']);
+                    echo 'The following file isn\'t the correct type for this request: ' . $fileinfo['path'];
+                }
+
+                if (isset($this->options['DirWhitelist']) && count($this->options['DirWhitelist']) > 0) {
+                    $found = false;
+                    foreach ($this->options['DirWhitelist'] as $folder) {
+                        $tempFolder = (($folder[0] === "/") ? $_SERVER['DOCUMENT_ROOT'] . substr($folder, 1, strlen($folder)) : $_SERVER['DOCUMENT_ROOT'] . $folder);
+                        if ($tempFolder === dirname($fileinfo['path'])) {
+                            $found = true;; // File is located in whitelist
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        // File isn't located in whitelisted folder, return 403
+                        Utilities::statusCode(403, 'Access Denied');
+                        echo 'The following file is not inside a whitelisted folder: ' . $fileinfo['path'] . " --- " . dirname($fileinfo['path']);
+                        return false;
+                    }
                 }
 
                 $newResponse = $this->newResponse($fileinfo);
-
                 if ($newResponse === false) {
+                    // File type isn't supported, return 500 header
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new \Exception('The following file is not supported: ' . $fileinfo['path']);
+                    echo 'The following file is not supported: ' . $fileinfo['path'];
+                    return false;
                 }
 
                 $file_list[] = $newResponse;
                 $hash .= $fileinfo['path'] . $fileinfo['last_edit'];
             } else {
+                // File wasn't found, return 404 header
                 Utilities::statusCode(404, 'Not Found');
-                throw new \Exception('404 File not found');
+                echo '404 File not found';
+                return false;
             }
-
         }
 
         if ($this->minify === true) {
-            $hash .= "minify"; // Make sure the server sees a difference between minified and not-minified version
+            $hash .= "minify"; // Make sure the server sees a difference between minified and not-minified version when caching
         }
 
         return array('hash' => md5($hash), 'list' => $file_list);
@@ -143,8 +171,7 @@ final class Response
      */
     private function fileInfo($path)
     {
-        $path = ($path[0] === "/") ? $_SERVER['DOCUMENT_ROOT'] . $path : $path;
-
+        $path = (($path[0] === "/") ? $_SERVER['DOCUMENT_ROOT'] . substr($path, 1, strlen($path)) : $_SERVER['DOCUMENT_ROOT'] . $path);
         if (file_exists($path)) {
             return array(
                 'path' => $path,

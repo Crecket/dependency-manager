@@ -1,4 +1,5 @@
 <?php
+
 require 'vendor/autoload.php';
 
 Crecket\DependencyManager\Loader::addJsFile('/assets/testfile1.js');

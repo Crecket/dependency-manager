@@ -1,4 +1,4 @@
-# custom-twig-extension
+# dependency-manager
 
 ## Introduction
 
@@ -35,16 +35,16 @@ Loader::addJsFile('testFile.js');
 Loader::addCssFile('testFile.css');
 ```
 
-In your twig template
+In your twig template create a script source. The first parameter is optional and enables/disables minifying your code.
 
 ```
-<script src="/minify.php?files={{ getJsList(true) }}">
+<script src="/minify.php{{ getJsList(true) }}">
 ```
 
-Or if you want the minified version, leave the parameter empty
+Or if you aren't using twig
 
 ```
-<link href="/minify.php?files={{ getCssList() }}" rel="stylesheet">
+<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetJsLink(true); ?>" rel="stylesheet">
 ```
 
 Now create a new file named minify.php for example and add the following line.
@@ -57,6 +57,8 @@ $options = array(
 $Response = new Crecket\DependencyManager\Response($options);
 ```
 
+#### Security
+
 If you want to make this more secure and ensure only you can create a file list add a secret key like this:
 
 ```
@@ -68,6 +70,15 @@ And add the same secret in the Response options.
 ```
 $options = array(
     'Secret' => 'some_secret' // A secret key to create a security hash, OPTIONAL
+);
+$Response = new Crecket\DependencyManager\Response($options);
+```
+
+You can also add a whitelist to the Response. (Again, these are based on your root directory)
+
+```
+$options = array(
+    'DirWhitelist' => array('/assets', '/content')
 );
 $Response = new Crecket\DependencyManager\Response($options);
 ```
