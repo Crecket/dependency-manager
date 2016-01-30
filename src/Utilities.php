@@ -15,7 +15,7 @@ final class Utilities
      */
     public static function statusCode($code, $message)
     {
-        self::$headers[] = ("{$_SERVER['SERVER_PROTOCOL']} {$code} {$message}");
+        self::$statusCodes[$code] = $message;
     }
 
     /**
@@ -24,8 +24,7 @@ final class Utilities
      */
     public static function setHeader($field, $value)
     {
-
-        self::$headers[] = ("{$field}: {$value}");
+        self::$headers[$field] = $value;
     }
 
     /**
@@ -33,8 +32,11 @@ final class Utilities
      */
     public static function sendHeaders()
     {
-        foreach (self::$headers as $header) {
-            header($header);
+        foreach (self::$headers as $key => $header) {
+            header($key.": ".$header);
+        }
+        foreach (self::$statusCodes as $key => $header) {
+            header("{$_SERVER['SERVER_PROTOCOL']} {$key} {$header}");
         }
     }
 

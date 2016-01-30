@@ -15,7 +15,7 @@ final class Response
     private $modified = false;
     private $cache;
     private $response_type = false;
-
+    private $last_modified = true;
     public $options;
 
     /**
@@ -42,7 +42,6 @@ final class Response
 
 
         if ($this->file_data === false) {
-
             Utilities::sendHeaders();
             exit;
         }
@@ -60,10 +59,10 @@ final class Response
 
         $contents = $this->getCollection();
 
-        $this->setHeaders($contents['last_modified']);
+        $this->setHeaders();
         Utilities::sendHeaders();
 
-        echo $contents['contents'];
+        echo $contents;
     }
 
     /**
@@ -75,7 +74,6 @@ final class Response
         if ($this->cache->contains($this->file_data['hash'])) {
             return $this->cache->fetch($this->file_data['hash']);
         } else {
-
             // File changed or not cached
             $contents = "";
             foreach ($this->file_data['list'] as $file) {
@@ -91,13 +89,8 @@ final class Response
                 }
             }
 
-            $data = array(
-                'contents' => $contents,
-                'last_modified' => microtime(true),
-            );
-
-            $this->cache->save($this->file_data['hash'], $data, 3600);
-            return $data;
+            $this->cache->save($this->file_data['hash'], $contents, 3600);
+            return $contents;
         }
     }
 
@@ -173,11 +166,15 @@ final class Response
     {
         $path = (($path[0] === "/") ? Constant('ROOT') . $path : Constant('ROOT') . "/" . $path);
         if (file_exists($path)) {
-            return array(
+            $data = array(
                 'path' => $path,
                 'last_edit' => filemtime($path),
                 'file_type' => pathinfo($path, PATHINFO_EXTENSION)
             );
+            if ($this->last_modified === false || $data['last_edit'] < $this->last_modified) {
+                $this->last_modified = $data['last_edit'];
+            }
+            return $data;
         }
         return false;
     }
@@ -224,28 +221,28 @@ final class Response
     }
 
     /**
-     * @param $last_modified
      * @return $this
      */
-    public function setHeaders($last_modified)
+    public function setHeaders()
     {
-        $eTag = md5($last_modified . $this->file_data['hash']);
+        $lastModifiedDate = $this->last_modified;
+        $eTag = md5($lastModifiedDate . $this->file_data['hash']);
         $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
         $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? $_SERVER['HTTP_IF_NONE_MATCH'] : false;
 
         if (
-            ($checkModifiedSince && strtotime($checkModifiedSince) == $last_modified) ||
+            ($checkModifiedSince &&
+                strtotime($checkModifiedSince) == $lastModifiedDate) ||
             $checkETag == $eTag
         ) {
             Utilities::statusCode(304, 'Not Modified');
-            $this->modified = false;
-        } else {
-            Utilities::setHeader('Cache-Control', 'max-age=600, must-revalidate');
-            Utilities::setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
-            Utilities::setHeader('ETag', $eTag);
             $this->modified = true;
+        } else {
+            Utilities::setHeader('Cache-Control', 'max-age=3600, must-revalidate');
+            Utilities::setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $this->last_modified) . ' GMT');
+            Utilities::setHeader('Expires', gmdate('D, d M Y H:i:s', time() + 60 * 60 * 24 * 90) . ' GMT');
+            Utilities::setHeader('ETag', $eTag);
         }
-
         return $this;
     }
 
