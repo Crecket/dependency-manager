@@ -77,7 +77,7 @@ final class Response
             // File changed or not cached
             $contents = "";
             foreach ($this->file_data['list'] as $file) {
-                $contents .= $file->getFile();
+                $contents .= $file->getFile()."\n"; // New line to avoid comments cutting off code when combining files
             }
 
             if (isset($_GET['minify'])) {
