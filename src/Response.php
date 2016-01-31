@@ -15,7 +15,7 @@ final class Response
     private $modified = false;
     private $cache;
     private $response_type = false;
-    private $last_modified = true;
+    private $last_modified = false;
     public $options;
 
     /**
@@ -238,10 +238,10 @@ final class Response
             Utilities::statusCode(304, 'Not Modified');
             $this->modified = true;
         } else {
-            Utilities::setHeader('Cache-Control', 'max-age=3600, must-revalidate');
-            Utilities::setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $this->last_modified) . ' GMT');
-            Utilities::setHeader('Expires', gmdate('D, d M Y H:i:s', time() + 60 * 60 * 24 * 90) . ' GMT');
-            Utilities::setHeader('ETag', $eTag);
+            $maxage = 60 * 60 * 24 * 320; // Avoid the hard limit some servers have
+            Utilities::setHeader('Cache-Control', 'max-age=' . $maxage . ', must-revalidate');
+            Utilities::setHeader('Last-Modified', date('D, d M Y H:i:s', strtotime($lastModifiedDate)) . ' GMT');
+            Utilities::setHeader('Expires', date('D, d M Y H:i:s', time() + 60 * 60 * 24 * 90) . ' GMT');
         }
         return $this;
     }
