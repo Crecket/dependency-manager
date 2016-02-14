@@ -33,7 +33,7 @@ final class Utilities
     public static function sendHeaders()
     {
         foreach (self::$headers as $key => $header) {
-            header($key.": ".$header);
+            header($key . ": " . $header);
         }
         foreach (self::$statusCodes as $key => $header) {
             header("{$_SERVER['SERVER_PROTOCOL']} {$key} {$header}");

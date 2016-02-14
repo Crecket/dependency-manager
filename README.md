@@ -54,6 +54,7 @@ $options = array(
     'Cache' => '/cache' // Location based on the root
 
 );
+define('ROOT', __DIR__); // Don't forget this! 
 $Response = new Crecket\DependencyManager\Response($options);
 ```
 
@@ -71,6 +72,7 @@ And add the same secret in the Response options.
 $options = array(
     'Secret' => 'some_secret' // A secret key to create a security hash, OPTIONAL
 );
+define('ROOT', __DIR__);
 $Response = new Crecket\DependencyManager\Response($options);
 ```
 

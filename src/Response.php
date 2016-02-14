@@ -77,7 +77,7 @@ final class Response
             // File changed or not cached
             $contents = "";
             foreach ($this->file_data['list'] as $file) {
-                $contents .= $file->getFile()."\n"; // New line to avoid comments cutting off code when combining files
+                $contents .= $file->getFile() . "\n"; // New line to avoid comments cutting off code when combining files
             }
 
             if (isset($_GET['minify'])) {
@@ -89,7 +89,7 @@ final class Response
                 }
             }
 
-            $this->cache->save($this->file_data['hash'], $contents, 3600);
+            $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
             return $contents;
         }
     }
@@ -145,7 +145,8 @@ final class Response
             } else {
                 // File wasn't found, return 404 header
                 Utilities::statusCode(404, 'Not Found');
-                echo '404 File not found';
+                echo '404 File not found: ';
+                echo htmlspecialchars($file);
                 return false;
             }
         }
