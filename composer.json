@@ -17,7 +17,7 @@
     "leafo/lessphp": "^0.5.0",
     "twig/twig": "^1.23",
     "oyejorge/less.php": "v1.7.0.10",
-    "css-crush/css-crush": "dev-master"
+    "css-crush/css-crush": "*"
   },
   "autoload": {
     "psr-4": {
