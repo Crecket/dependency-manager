@@ -8,15 +8,19 @@ class Less implements Type
 {
 
     private $file;
+    private $cache;
 
     /**
      * Less constructor.
      * @param $file
+     * @param $cache
      */
-    public function __construct($file)
+    public function __construct($file, $cache)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
+
+        $this->cache = $cache;
 
         return $this;
     }
@@ -26,10 +30,29 @@ class Less implements Type
      */
     public function getFile()
     {
-        // TODO use secure file loader
-        $file = Utilities::getFile($this->file['path']);
-        $less = new \lessc;
-        return $less->compile($file);
+        // Check if this filepath/last_edit time hash is stored
+        $fileHash = hash('sha256', $this->file['last_edit'] . $this->file['path']);
+
+        // Check if cache contains this hash
+        if ($this->cache->contains($fileHash)) {
+            // Cache contains this combination so file hasn't moved/changed
+            return $this->cache->fetch($fileHash);
+        }
+
+        // Create less parser
+        $parser = new \Less_Parser();
+
+        // Parse file using direct file path
+        $parser->parseFile($this->file['path'], '/');
+
+        // Turn less into css
+        $css = $parser->getCss();
+
+        // Store the css in the file system
+        $this->cache->save($fileHash, $css);
+
+        // return css
+        return $css;
     }
 
 }

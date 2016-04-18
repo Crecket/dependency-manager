@@ -57,7 +57,7 @@ class Loader
         $link = "?files=" . $list;
 
         if (self::$secret !== false) {
-            $link .= "&secret=" . md5($list . self::$secret);
+            $link .= "&secret=" . hash('sha256', $list . self::$secret);
         }
 
         if ($minify === true) {
@@ -78,7 +78,7 @@ class Loader
         $link = "?files=" . $list;
 
         if (self::$secret !== false) {
-            $link .= "&secret=" . md5($list . self::$secret);
+            $link .= "&secret=" . hash('sha256', $list . self::$secret);
         }
 
         if ($minify === true) {

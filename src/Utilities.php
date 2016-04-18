@@ -42,6 +42,7 @@ final class Utilities
 
 
     /**
+     * // TODO secure this function
      * @param $path
      * @return string
      */

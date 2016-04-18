@@ -10,7 +10,7 @@ class TwigResponse extends \Twig_Extension
      */
     public function getName()
     {
-        return 'Dependency_Manager_Response';
+        return 'Crecket_Dependency_Manager_Response';
     }
 
     /**

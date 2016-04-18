@@ -44,7 +44,7 @@ In your twig template create a script source. The first parameter is optional an
 Or if you aren't using twig
 
 ```
-<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetJsLink(true); ?>" rel="stylesheet">
+<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">
 ```
 
 Now create a new file named minify.php for example and add the following line.

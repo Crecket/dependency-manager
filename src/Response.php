@@ -27,38 +27,45 @@ final class Response
     {
         $this->options = $options;
 
+        // Required option
         if (empty($this->options['Cache'])) {
             die('Missing caching target location');
         }
 
+        // Create cache element
         $this->cache = new FilesystemCache(Constant('ROOT') . $this->options['Cache']);
         $this->cache->setNamespace('crecket_dependency_loader');
 
+        // Check if files variable is set
         if (!isset($_GET['files'])) {
             return false;
         }
 
+        // Parse file list
         $this->file_data = $this->fileList($_GET['files']);
 
-
+        // Check if file_data is correct
         if ($this->file_data === false) {
             Utilities::sendHeaders();
             exit;
         }
 
+        // Check if minify code is enabled
         if (isset($_GET['minify'])) {
             $this->minify = true;
         }
 
+        // Check if secret is set and if it matches the private key
         if (isset($this->options['Secret']) && $options['Secret'] !== false) {
-            // Check if secret is set and if it matches the private key
-            if (!isset($_GET['secret']) || $_GET['secret'] !== md5($_GET['files'] . $this->options['Secret'])) {
+            if (!isset($_GET['secret']) || $_GET['secret'] !== hash('sha256', $_GET['files'] . $this->options['Secret'])) {
                 die('Invalid request');
             }
         }
 
+        // Get the file contents
         $contents = $this->getCollection();
 
+        // Send headers
         $this->setHeaders();
         Utilities::sendHeaders();
 
@@ -80,7 +87,7 @@ final class Response
                 $contents .= $file->getFile() . "\n"; // New line to avoid comments cutting off code when combining files
             }
 
-            if (isset($_GET['minify'])) {
+            if ($this->minify) {
                 if (isset($this->response_type['css'])) {
                     $minifier = new CSS($contents);
                     $contents = $minifier->minify();
@@ -101,20 +108,24 @@ final class Response
      */
     private function fileList($string)
     {
+        // file list to array
         $list = explode(",", $string);
         $hash = "";
         $file_list = array();
 
         foreach ($list as $file) {
 
+            // Retrieve file info for file
             $fileinfo = $this->fileInfo($file);
             if ($fileinfo !== false) {
 
+                // Verify the response type
                 if ($this->response_type !== false && !isset($this->response_type[$fileinfo['file_type']])) {
                     Utilities::statusCode(500, 'Internal Server Error');
                     echo 'The following file isn\'t the correct type for this request: ' . $fileinfo['path'];
                 }
 
+                // Check folder whitelist
                 if (isset($this->options['DirWhitelist']) && count($this->options['DirWhitelist']) > 0) {
                     $found = false;
                     foreach ($this->options['DirWhitelist'] as $folder) {
@@ -132,6 +143,7 @@ final class Response
                     }
                 }
 
+                // Create new response object
                 $newResponse = $this->newResponse($fileinfo);
                 if ($newResponse === false) {
                     // File type isn't supported, return 500 header
@@ -140,6 +152,7 @@ final class Response
                     return false;
                 }
 
+                // Add response to array
                 $file_list[] = $newResponse;
                 $hash .= $fileinfo['path'] . $fileinfo['last_edit'];
             } else {
@@ -151,11 +164,11 @@ final class Response
             }
         }
 
-        if ($this->minify === true) {
+        if ($this->minify) {
             $hash .= "minify"; // Make sure the server sees a difference between minified and not-minified version when caching
         }
 
-        return array('hash' => md5($hash), 'list' => $file_list);
+        return array('hash' => hash('sha256', $hash), 'list' => $file_list);
     }
 
 
@@ -193,7 +206,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Css($file_info);
+                return new Types\Css($file_info, $this->cache);
                 break;
             case 'scss':
                 $this->response_type = array(
@@ -201,7 +214,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Scss($file_info);
+                return new Types\Scss($file_info, $this->cache);
                 break;
             case 'less':
                 $this->response_type = array(
@@ -209,13 +222,13 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Less($file_info);
+                return new Types\Less($file_info, $this->cache);
                 break;
             case 'js':
                 $this->response_type = array(
                     'js' => true
                 );
-                return new Types\Js($file_info);
+                return new Types\Js($file_info, $this->cache);
                 break;
         }
         return false;
@@ -227,7 +240,7 @@ final class Response
     public function setHeaders()
     {
         $lastModifiedDate = $this->last_modified;
-        $eTag = md5($lastModifiedDate . $this->file_data['hash']);
+        $eTag = hash('sha256', $lastModifiedDate . $this->file_data['hash']);
         $checkModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
         $checkETag = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? $_SERVER['HTTP_IF_NONE_MATCH'] : false;
 

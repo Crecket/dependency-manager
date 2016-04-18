@@ -8,15 +8,19 @@ class Js implements Type
 {
 
     private $file;
+    private $cache;
 
     /**
      * Js constructor.
      * @param $file
+     * @param $cache
      */
-    public function __construct($file)
+    public function __construct($file, $cache)
     {
         Utilities::setHeader('Content-Type', 'application/javascript');
         $this->file = $file;
+
+        $this->cache = $cache;
 
         return $this;
     }
@@ -26,7 +30,7 @@ class Js implements Type
      */
     public function getFile()
     {
-        // TODO use secure file loader
+        // No point in caching js files since no parsing is done
         return Utilities::getFile($this->file['path']);
     }
 

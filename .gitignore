@@ -1,4 +1,6 @@
-/assets/
+/assets
+/vendor
+/bower_components
+bower.json
 /index.php
 /minify.php
-/curl.php
