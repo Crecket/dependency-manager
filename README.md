@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A simple and small dependency manager for javascript and CSS files. All files will be combined, minified and cached. Less and Scss files are also supported.
+A simple and small dependency manager for javascript and CSS files. All files will be combined, minified and cached. Less and Scss files are also supported and all css output is run through a auto-prefixer.
 
 ## Requirements
 
@@ -12,6 +12,7 @@ A simple and small dependency manager for javascript and CSS files. All files wi
     - tedivm/jshrink ^1.1
     - leafo/lessphp ^0.5.0
     - twig/twig ^1.23
+    - css-crush/css-crush ^dev-master
 
 ## Installation
 

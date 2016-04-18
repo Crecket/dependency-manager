@@ -87,14 +87,24 @@ final class Response
                 $contents .= $file->getFile() . "\n"; // New line to avoid comments cutting off code when combining files
             }
 
-            if ($this->minify) {
+            // if result is css, run the file through a auto prefixer
+            if (isset($this->response_type['css'])) {
+                $contents = csscrush_string($contents, array());
+            }
+
+            // check if minify is enabled
+            if (!$this->minify) {
+                // check content type
                 if (isset($this->response_type['css'])) {
+                    // minify cs
                     $minifier = new CSS($contents);
                     $contents = $minifier->minify();
                 } else if (isset($this->response_type['js'])) {
+                    // minify js
                     $contents = Minifier::minify($contents, array('flaggedComments' => false));
                 }
             }
+
 
             $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
             return $contents;
