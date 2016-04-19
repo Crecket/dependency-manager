@@ -77,11 +77,3 @@ define('ROOT', __DIR__);
 $Response = new Crecket\DependencyManager\Response($options);
 ```
 
-You can also add a whitelist to the Response. (Again, these are based on your root directory)
-
-```
-$options = array(
-    'DirWhitelist' => array('/assets', '/content')
-);
-$Response = new Crecket\DependencyManager\Response($options);
-```

@@ -27,14 +27,24 @@ final class Response
     {
         $this->options = $options;
 
+        // Check if minify code is enabled
+        if (isset($_GET['minify'])) {
+            $this->minify = true;
+        }
+
         // Required option
         if (empty($this->options['Cache'])) {
             die('Missing caching target location');
         }
 
         // Create cache element
-        $this->cache = new FilesystemCache(Constant('ROOT') . $this->options['Cache']);
-        $this->cache->setNamespace('crecket_dependency_loader');
+        $this->cache = new FilesystemCache($this->options['Cache']);
+
+
+        // Required option
+        if (!empty($this->options['CacheNameSpace'])) {
+            $this->cache->setNamespace('crecket_dependency_loader');
+        }
 
         // Check if files variable is set
         if (!isset($_GET['files'])) {
@@ -48,11 +58,6 @@ final class Response
         if ($this->file_data === false) {
             Utilities::sendHeaders();
             exit;
-        }
-
-        // Check if minify code is enabled
-        if (isset($_GET['minify'])) {
-            $this->minify = true;
         }
 
         // Check if secret is set and if it matches the private key
@@ -93,7 +98,7 @@ final class Response
             }
 
             // check if minify is enabled
-            if (!$this->minify) {
+            if ($this->minify) {
                 // check content type
                 if (isset($this->response_type['css'])) {
                     // minify cs
@@ -136,22 +141,7 @@ final class Response
                 }
 
                 // Check folder whitelist
-                if (isset($this->options['DirWhitelist']) && count($this->options['DirWhitelist']) > 0) {
-                    $found = false;
-                    foreach ($this->options['DirWhitelist'] as $folder) {
-                        $tempFolder = (($folder[0] === "/") ? Constant('ROOT') . $folder : Constant('ROOT') . "/" . $folder);
-                        if ($tempFolder === dirname($fileinfo['path'])) {
-                            $found = true;; // File is located in whitelist
-                            break;
-                        }
-                    }
-                    if (!$found) {
-                        // File isn't located in whitelisted folder, return 403
-                        Utilities::statusCode(403, 'Access Denied');
-                        echo 'The following file is not inside a whitelisted folder: ' . $fileinfo['path'];
-                        return false;
-                    }
-                }
+                // TODO DirWhiteList needs work
 
                 // Create new response object
                 $newResponse = $this->newResponse($fileinfo);
