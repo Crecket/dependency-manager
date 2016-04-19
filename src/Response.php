@@ -257,7 +257,8 @@ final class Response
         } else {
             $maxage = 60 * 60 * 24 * 320; // Avoid the hard limit some servers have
             Utilities::setHeader('Cache-Control', 'max-age=' . $maxage . ', must-revalidate');
-            Utilities::setHeader('Last-Modified', date('D, d M Y H:i:s', strtotime($lastModifiedDate)) . ' GMT');
+            Utilities::setHeader('Pragma', 'cache');
+            Utilities::setHeader('Last-Modified', date('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             Utilities::setHeader('Expires', date('D, d M Y H:i:s', time() + 60 * 60 * 24 * 90) . ' GMT');
         }
         return $this;

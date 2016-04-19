@@ -31,35 +31,19 @@ class Less implements Type
     public function getFile()
     {
 
-
-        // Check if this filepath/last_edit time hash is stored
-//        $fileHash = hash('sha256', $this->file['last_edit'] . $this->file['path']);
-
-        // Check if cache contains this hash
-//        if ($this->cache->contains($fileHash)) {
-//            // Cache contains this combination so file hasn't moved/changed
-//            return $this->cache->fetch($fileHash);
-//        }
-
         // TODO use caching from plugin instead of custom caching to avoid import errors
-//        $less_files = array('/var/www/mysite/bootstrap.less' => '/mysite/');
-//        $options = array('cache_dir' => '/var/www/writable_folder');
-//        $css_file_name = \Less_Cache::Get($less_files, $options);
-//        $compiled = file_get_contents('/var/www/writable_folder/' . $css_file_name);
-
         // Create less parser
         $parser = new \Less_Parser();
 
-        // Parse file using direct file path
-        $parser->parseFile($this->file['path'], '/');
+        try {
+            // Parse file using direct file path
+            $parser->parseFile($this->file['path'], '/');
 
-        $imported_files = $parser->allParsedFiles();
-
-        // Turn less into css
-        $css = $parser->getCss();
-
-        // Store the css in the file system
-//        $this->cache->save($fileHash, $css);
+            // Turn less into css
+            $css = $parser->getCss();
+        } catch (\Exception $e) {
+            return false;
+        }
 
         // return css
         return $css;
