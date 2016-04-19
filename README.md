@@ -53,7 +53,6 @@ Now create a new file named minify.php for example and add the following line.
 ```
 $options = array(
     'Cache' => '/cache' // Location based on the root
-
 );
 define('ROOT', __DIR__); // Don't forget this! 
 $Response = new Crecket\DependencyManager\Response($options);
@@ -61,7 +60,7 @@ $Response = new Crecket\DependencyManager\Response($options);
 
 #### Security
 
-If you want to make this more secure and ensure only you can create a file list add a secret key like this:
+To ensure only you can create a file list add a secret key like this:
 
 ```
 Loader::Secret('some_secret');

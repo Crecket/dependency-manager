@@ -16,6 +16,7 @@ final class Response
     private $cache;
     private $response_type = false;
     private $last_modified = false;
+    private $secret = false;
     public $options;
 
     /**
@@ -26,6 +27,20 @@ final class Response
     public function __construct($options)
     {
         $this->options = $options;
+
+        // Check if files hash is set
+        if (!isset($_GET['secret'])) {
+            die('Invalid request');
+        }
+
+        $this->secret = $_GET['secret'];
+
+        // Check if secret is set and if it matches the private key
+        if (!isset($_SESSION['dependency_test'][hash('sha256', $this->secret . $this->options['Secret'])])) {
+            die('Invalid secret');
+        } else {
+            $file_list = $_SESSION['dependency_test'][hash('sha256', $this->secret . $this->options['Secret'])];
+        }
 
         // Check if minify code is enabled
         if (isset($_GET['minify'])) {
@@ -46,25 +61,13 @@ final class Response
             $this->cache->setNamespace('crecket_dependency_loader');
         }
 
-        // Check if files variable is set
-        if (!isset($_GET['files'])) {
-            return false;
-        }
-
         // Parse file list
-        $this->file_data = $this->fileList($_GET['files']);
+        $this->file_data = $this->fileList($file_list);
 
         // Check if file_data is correct
         if ($this->file_data === false) {
             Utilities::sendHeaders();
             exit;
-        }
-
-        // Check if secret is set and if it matches the private key
-        if (isset($this->options['Secret']) && $options['Secret'] !== false) {
-            if (!isset($_GET['secret']) || $_GET['secret'] !== hash('sha256', $_GET['files'] . $this->options['Secret'])) {
-                die('Invalid request');
-            }
         }
 
         // Get the file contents
@@ -117,14 +120,14 @@ final class Response
     }
 
     /**
-     * @param $string
+     * @param $list
      * @return array
      * @throws \Exception
      */
-    private function fileList($string)
+    private function fileList($list)
     {
-        // file list to array
-        $list = explode(",", $string);
+
+        // default values
         $hash = "";
         $file_list = array();
 

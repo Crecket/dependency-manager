@@ -52,14 +52,16 @@ class Loader
      */
     public static function getJsLink($minify = false)
     {
-        $list = implode(',', self::$jsFiles);
+        // create hash for given file list and secret
+        $hash = hash('sha256', serialize(self::$jsFiles) . self::$secret);
 
-        $link = "?files=" . $list;
+        // add to the link
+        $link = "?secret=" . $hash;
 
-        if (self::$secret !== false) {
-            $link .= "&secret=" . hash('sha256', $list . self::$secret);
-        }
+        // now rehash again with the secret and store filelist in session
+        $_SESSION['dependency_test'][hash('sha256', $hash . self::$secret)] = self::$jsFiles;
 
+        // Add minify to link
         if ($minify === true) {
             $link .= "&minify=true";
         }
@@ -73,14 +75,16 @@ class Loader
      */
     public static function getCssLink($minify = false)
     {
-        $list = implode(',', self::$cssFiles);
+        // create hash for given file list and secret
+        $hash = hash('sha256', serialize(self::$cssFiles) . self::$secret);
 
-        $link = "?files=" . $list;
+        // add to the link
+        $link = "?secret=" . $hash;
 
-        if (self::$secret !== false) {
-            $link .= "&secret=" . hash('sha256', $list . self::$secret);
-        }
+        // now rehash again with the secret and store filelist in session
+        $_SESSION['dependency_test'][hash('sha256', $hash . self::$secret)] = self::$cssFiles;
 
+        // Add minify to link
         if ($minify === true) {
             $link .= "&minify=true";
         }
