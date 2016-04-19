@@ -93,7 +93,7 @@ final class Response
             }
 
             // check if minify is enabled
-            if (!$this->minify) {
+            if ($this->minify) {
                 // check content type
                 if (isset($this->response_type['css'])) {
                     // minify cs
