@@ -17,13 +17,11 @@ A simple and small dependency manager for javascript and CSS files. All files wi
 ## Installation
 
 1. Install with composer
-```composer require crecket/dependency-manager```
+```composer require crecket/dependency-manager ```
 
 2. Add the twig extension to your twig view:
 
-```
-$twig->addExtension(new Crecket\DependencyManager\Response());
-```
+```$twig->addExtension(new Crecket\DependencyManager\Response());```
 
 ## Usage
 
@@ -38,15 +36,11 @@ Loader::addCssFile('testFile.css');
 
 In your twig template create a script source. The first parameter is optional and enables/disables minifying your code.
 
-```
-<script src="/minify.php{{ getJsList(true) }}">
-```
+```<script src="/minify.php{{ getJsList(true) }}">```
 
 Or if you aren't using twig
 
-```
-<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">
-```
+```<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">```
 
 Now create a new file named minify.php for example and add the following line.
 
@@ -54,25 +48,32 @@ Now create a new file named minify.php for example and add the following line.
 $options = array(
     'Cache' => '/cache' // Location based on the root
 );
+
 define('ROOT', __DIR__); // Don't forget this! 
-$Response = new Crecket\DependencyManager\Response($options);
+
+try{
+    echo $Response = new Crecket\DependencyManager\Response($options);
+}catch(Crecket\DependencyManager\Exception $ex){ // catch errors
+    echo $ex->getTitle();
+    echo '<br>';
+    echo $ex->getMessage();
+}
+```
+
+## Debugging
+
+Response takes a optional second parameter which will make sure the session storage and secret key are ignored.
+
+```
+$file_list = array('/some/js/file.js', '/another/js/files.js');
+echo $Response = new Crecket\DependencyManager\Response($options, $file_list);
 ```
 
 #### Security
 
-To ensure only you can create a file list add a secret key like this:
+To ensure only you can create a file list add a secret key. Make sure this key is secure/long enough!
 
 ```
 Loader::Secret('some_secret');
-```
-
-And add the same secret in the Response options.
-
-```
-$options = array(
-    'Secret' => 'some_secret' // A secret key to create a security hash, OPTIONAL
-);
-define('ROOT', __DIR__);
-$Response = new Crecket\DependencyManager\Response($options);
 ```
 

@@ -26,7 +26,6 @@ class Css implements Type
      */
     public function getFile()
     {
-        echo $_SESSION['testcount']++;
         // No point in storing in cache since no parsing is done
         return Utilities::getFile($this->file['path']);
     }

@@ -22,24 +22,38 @@ final class Response
     /**
      * Response constructor.
      * @param $options
+     * @param $input_file_list
      * @throws Exception
      */
-    public function __construct($options)
+    public function __construct($options, $input_file_list = false)
     {
         $this->options = $options;
 
-        // Check if files hash is set
-        if (!isset($_GET['secret'])) {
-            throw new Exception('No secret key', 'Secret key is not set', 403);
-        }
+        if ($input_file_list !== false) {
 
-        $this->secret = $_GET['secret'];
+            // custom file list entered
+            $file_list = $input_file_list;
 
-        // Check if secret is set and if it matches the private key
-        if (!isset($_SESSION['crecket_dependency_manager'][$this->secret])) {
-            throw new Exception('Invalid secret', 'The secret key was not found or invalid.', 403);
         } else {
-            $file_list = $_SESSION['crecket_dependency_manager'][$this->secret];
+
+            // Check if files hash is set in parameter
+            if (!isset($_GET['secret'])) {
+                throw new Exception('No secret key', 'Secret key is not set', 403);
+            }
+
+            $this->secret = $_GET['secret'];
+
+            if (!isset($_SESSION['crecket_dependency_manager'][$this->secret])) {
+
+                // Check if secret is set and if it matches the private key
+                throw new Exception('Invalid secret', 'The secret key was not found or invalid.', 403);
+
+            } else {
+
+                // retrieve file list from session
+                $file_list = $_SESSION['crecket_dependency_manager'][$this->secret];
+
+            }
         }
 
         // Check if minify code is enabled
@@ -77,7 +91,7 @@ final class Response
         $this->setHeaders();
         Utilities::sendHeaders();
 
-        echo $contents;
+        return $contents;
     }
 
     /**

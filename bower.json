@@ -1,0 +1,22 @@
+{
+  "name": "dependency-manager",
+  "homepage": "https://github.com/Crecket/dependency-manager",
+  "authors": [
+    "crecket <crecketgaming@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery": "^2.2.3",
+    "bootstrap-sass": "^3.3.6"
+  }
+}

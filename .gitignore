@@ -1,7 +1,6 @@
-/assets
 /vendor
 /bower_components
-bower.json
 /index.php
 /minify.php
 /cache
+/phpunit-5.3.2.phar
