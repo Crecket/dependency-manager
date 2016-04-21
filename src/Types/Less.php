@@ -8,19 +8,15 @@ class Less implements Type
 {
 
     private $file;
-    private $cache;
 
     /**
      * Less constructor.
      * @param $file
-     * @param $cache
      */
-    public function __construct($file, $cache)
+    public function __construct($file)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
-
-        $this->cache = $cache;
 
         return $this;
     }
@@ -30,7 +26,6 @@ class Less implements Type
      */
     public function getFile()
     {
-
         // TODO use caching from plugin instead of custom caching to avoid import errors
         // Create less parser
         $parser = new \Less_Parser();

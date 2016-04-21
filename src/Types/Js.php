@@ -8,20 +8,16 @@ class Js implements Type
 {
 
     private $file;
-    private $cache;
 
     /**
      * Js constructor.
      * @param $file
-     * @param $cache
      */
-    public function __construct($file, $cache)
+    public function __construct($file)
     {
         Utilities::setHeader('Content-Type', 'application/javascript');
         $this->file = $file;
-
-        $this->cache = $cache;
-
+        
         return $this;
     }
 

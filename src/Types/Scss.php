@@ -9,19 +9,15 @@ class Scss implements Type
 {
 
     private $file;
-    private $cache;
 
     /**
      * Scss constructor.
      * @param $file
-     * @param $cache
      */
-    public function __construct($file, $cache)
+    public function __construct($file)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
-
-        $this->cache = $cache;
 
         return $this;
     }
@@ -32,7 +28,6 @@ class Scss implements Type
     public function getFile()
     {
         // TODO verify that plugin has propper native caching support
-
         // get file contents
         $file_contents = Utilities::getFile($this->file['path']);
 

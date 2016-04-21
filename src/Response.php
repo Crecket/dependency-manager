@@ -22,7 +22,7 @@ final class Response
     /**
      * Response constructor.
      * @param $options
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($options)
     {
@@ -30,14 +30,14 @@ final class Response
 
         // Check if files hash is set
         if (!isset($_GET['secret'])) {
-            die('Invalid request');
+            throw new Exception('No secret key', 'Secret key is not set', 403);
         }
 
         $this->secret = $_GET['secret'];
 
         // Check if secret is set and if it matches the private key
         if (!isset($_SESSION['crecket_dependency_manager'][$this->secret])) {
-            die('Invalid secret');
+            throw new Exception('Invalid secret', 'The secret key was not found or invalid.', 403);
         } else {
             $file_list = $_SESSION['crecket_dependency_manager'][$this->secret];
         }
@@ -49,7 +49,7 @@ final class Response
 
         // Required option
         if (empty($this->options['Cache'])) {
-            die('Missing caching target location');
+            throw new Exception('Caching error', 'Missing caching target location');
         }
 
         // Create cache element
@@ -86,6 +86,7 @@ final class Response
      */
     public function getCollection()
     {
+
         if ($this->cache->contains($this->file_data['hash'])) {
             return $this->cache->fetch($this->file_data['hash']);
         } else {
@@ -113,8 +114,8 @@ final class Response
                 }
             }
 
-
             $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
+
             return $contents;
         }
     }
@@ -140,19 +141,15 @@ final class Response
                 // Verify the response type
                 if ($this->response_type !== false && !isset($this->response_type[$fileinfo['file_type']])) {
                     Utilities::statusCode(500, 'Internal Server Error');
-                    echo 'The following file isn\'t the correct type for this request: ' . $fileinfo['path'];
+                    throw new Exception('File not supported', 'Error 500: The following file isn\'t the correct type for this request: ' . htmlspecialchars($fileinfo['path']));
                 }
-
-                // Check folder whitelist
-                // TODO DirWhiteList needs work
 
                 // Create new response object
                 $newResponse = $this->newResponse($fileinfo);
                 if ($newResponse === false) {
                     // File type isn't supported, return 500 header
                     Utilities::statusCode(500, 'Internal Server Error');
-                    echo 'The following file is not supported: ' . $fileinfo['path'];
-                    return false;
+                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo['path']));
                 }
 
                 // Add response to array
@@ -161,9 +158,7 @@ final class Response
             } else {
                 // File wasn't found, return 404 header
                 Utilities::statusCode(404, 'Not Found');
-                echo '404 File not found: ';
-                echo htmlspecialchars($file);
-                return false;
+                throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file));
             }
         }
 
@@ -209,7 +204,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Css($file_info, $this->cache);
+                return new Types\Css($file_info);
                 break;
             case 'scss':
                 $this->response_type = array(
@@ -217,7 +212,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Scss($file_info, $this->cache);
+                return new Types\Scss($file_info);
                 break;
             case 'less':
                 $this->response_type = array(
@@ -225,13 +220,13 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Less($file_info, $this->cache);
+                return new Types\Less($file_info);
                 break;
             case 'js':
                 $this->response_type = array(
                     'js' => true
                 );
-                return new Types\Js($file_info, $this->cache);
+                return new Types\Js($file_info);
                 break;
         }
         return false;
