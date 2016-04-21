@@ -6,4 +6,5 @@ script: phpunit tests/test.php
 install:
     - composer self-update
     - composer update -o
+    - npm install -g bower
     - bower install
