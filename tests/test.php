@@ -57,10 +57,5 @@ class testMain extends PHPUnit_Framework_TestCase
     }
 
     // TODO Session testing
-//    public function testSecretSession()
-//    {
-//        $this->assertTrue(!empty($_SESSION['crecket_dependency_manager']['e22e067fbcda37f27bd551138a7d7b1e7b8146c5d7653d87f526b1d60114c895']));
-//        $this->assertTrue(!empty($_SESSION['crecket_dependency_manager']['27b3b42627444fe2c32914059d65c075f9a39375f2a96c9b2ae858cedee6928c']));
-//    }
 
 }
