@@ -36,10 +36,10 @@ final class Response
         $this->secret = $_GET['secret'];
 
         // Check if secret is set and if it matches the private key
-        if (!isset($_SESSION['dependency_test'][hash('sha256', $this->secret . $this->options['Secret'])])) {
+        if (!isset($_SESSION['crecket_dependency_manager'][$this->secret])) {
             die('Invalid secret');
         } else {
-            $file_list = $_SESSION['dependency_test'][hash('sha256', $this->secret . $this->options['Secret'])];
+            $file_list = $_SESSION['crecket_dependency_manager'][$this->secret];
         }
 
         // Check if minify code is enabled

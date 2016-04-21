@@ -59,7 +59,7 @@ class Loader
         $link = "?secret=" . $hash;
 
         // now rehash again with the secret and store filelist in session
-        $_SESSION['dependency_test'][hash('sha256', $hash . self::$secret)] = self::$jsFiles;
+        $_SESSION['crecket_dependency_manager'][$hash] = self::$jsFiles;
 
         // Add minify to link
         if ($minify === true) {
@@ -82,7 +82,7 @@ class Loader
         $link = "?secret=" . $hash;
 
         // now rehash again with the secret and store filelist in session
-        $_SESSION['dependency_test'][hash('sha256', $hash . self::$secret)] = self::$cssFiles;
+        $_SESSION['crecket_dependency_manager'][$hash] = self::$cssFiles;
 
         // Add minify to link
         if ($minify === true) {
