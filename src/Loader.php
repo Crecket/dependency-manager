@@ -15,7 +15,7 @@ class Loader
      */
     public static function addJsFile($file)
     {
-        self::$jsFiles[] = $file;
+        self::$jsFiles[] = array('local' => true, 'type' => 'js', 'location' => $file);
     }
 
     /**
@@ -23,7 +23,7 @@ class Loader
      */
     public static function addCssFile($file)
     {
-        self::$cssFiles[] = $file;
+        self::$cssFiles[] = array('local' => true, 'type' => 'css', 'location' => $file);
     }
 
     /**
@@ -32,7 +32,7 @@ class Loader
     public static function addJsFiles($files)
     {
         foreach ($files as $file) {
-            self::$jsFiles[] = $file;
+            self::$jsFiles[] = array('local' => true, 'type' => 'js', 'location' => $file);
         }
     }
 
@@ -42,8 +42,30 @@ class Loader
     public static function addCssFiles($files)
     {
         foreach ($files as $file) {
-            self::$cssFiles[] = $file;
+            self::$cssFiles[] = array('local' => true, 'type' => 'css', 'location' => $file);
         }
+    }
+
+    /**
+     * @param $type
+     * @param $file
+     * @return bool
+     * @throws Exception
+     */
+    public static function addRemoteFile($type, $file)
+    {
+
+        if (strtolower($type) === 'css') {
+            self::$cssFiles[] = array('local' => false, 'type' => 'css', 'location' => $file);
+            return true;
+        }
+
+        if (strtolower($type) === 'js') {
+            self::$jsFiles[] = array('local' => false, 'type' => 'js', 'location' => $file);
+            return true;
+        }
+
+        throw new Exception('Invalid type', 'Input type is not \'js\' or \'css\'');
     }
 
     /**

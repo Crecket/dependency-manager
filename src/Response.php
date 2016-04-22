@@ -10,14 +10,59 @@ use JShrink\Minifier;
 final class Response
 {
 
+    /**
+     * @var mixed
+     * File list
+     */
     private $file_data;
+
+    /**
+     * @var bool
+     * Minify enabled or not
+     */
     private $minify = false;
+
+    /**
+     * @var bool
+     * This file request is stored/has been modified
+     */
     private $modified = false;
+
+    /**
+     * @var bool|object
+     * Caching object
+     */
     private $cache;
+
+    /**
+     * @var bool
+     * Location to store new remote files
+     */
+    private $remote_storage = false;
+
+    /**
+     * @var bool|array
+     * Contains the current response type, used to prevent js/css mixing in one file
+     */
     private $response_type = false;
+
+    /**
+     * @var bool|int
+     * Oldest timestamp for all listed files
+     */
     private $last_modified = false;
+
+    /**
+     * @var bool|mixed
+     * Secret hash value for the file list
+     */
     private $secret = false;
-    public $options;
+
+    /**
+     * @var array
+     * Input options
+     */
+    private $options;
 
     /**
      * Response constructor.
@@ -69,6 +114,15 @@ final class Response
         // Create cache element
         $this->cache = new FilesystemCache($this->options['Cache']);
 
+        // Required option
+        if (empty($this->options['Remote_storage'])) {
+            throw new Exception('Remote file error', 'Missing remote file storage location');
+        }else if(!file_exists($this->options['Remote_storage'])){
+            throw new Exception('Remote file error', 'Storage location not found');
+        }
+
+        // set remote file storage location
+        $this->remote_storage = $this->options['Remote_storage'];
 
         // Required option
         if (!empty($this->options['CacheNameSpace'])) {
@@ -84,6 +138,13 @@ final class Response
             exit;
         }
 
+    }
+
+    /**
+     * @return array|false|mixed
+     */
+    public function getResult()
+    {
         // Get the file contents
         $contents = $this->getCollection();
 
@@ -128,6 +189,7 @@ final class Response
                 }
             }
 
+            // store in cache
             $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
 
             return $contents;
@@ -146,10 +208,32 @@ final class Response
         $hash = "";
         $file_list = array();
 
+        // loop through file list
         foreach ($list as $file) {
 
-            // Retrieve file info for file
-            $fileinfo = $this->fileInfo($file);
+            // check if file is local or remote
+            if ($file['local'] === false) {
+
+                // new remote file handler
+                $RemoteFile = new RemoteHandler($file['location'], $this->remote_storage, $this->cache);
+
+                // get file contents
+                $RemoteFile->getContents();
+
+                // store in local file
+                $file['location'] = $RemoteFile->storeContents();
+
+                // Retrieve file info for file
+                $fileinfo = $this->fileInfo($file);
+            }else{
+
+                // Retrieve file info for file
+                $fileinfo = $this->fileInfo($file);
+
+            }
+
+            dump($fileinfo);
+
             if ($fileinfo !== false) {
 
                 // Verify the response type
@@ -169,11 +253,15 @@ final class Response
                 // Add response to array
                 $file_list[] = $newResponse;
                 $hash .= $fileinfo['path'] . $fileinfo['last_edit'];
+
             } else {
+
                 // File wasn't found, return 404 header
                 Utilities::statusCode(404, 'Not Found');
-                throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file));
+                throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file['location']));
+
             }
+
         }
 
         if ($this->minify) {
@@ -185,12 +273,12 @@ final class Response
 
 
     /**
-     * @param $path
+     * @param $file
      * @return array|bool
      */
-    private function fileInfo($path)
+    private function fileInfo($file)
     {
-        $path = (($path[0] === "/") ? Constant('ROOT') . $path : Constant('ROOT') . "/" . $path);
+        $path = (($file['location'][0] === "/") ? Constant('ROOT') . $file['location'] : Constant('ROOT') . "/" . $file['location']);
         if (file_exists($path)) {
             $data = array(
                 'path' => $path,

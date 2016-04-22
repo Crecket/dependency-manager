@@ -1,5 +1,7 @@
 # dependency-manager
 
+[![Build Status](https://travis-ci.org/Crecket/dependency-manager.svg?branch=develop)](https://travis-ci.org/Crecket/dependency-manager) [![Latest Release](https://img.shields.io/github/release/crecket/Dependency-manager.svg)](https://github.com/Crecket/dependency-manager)
+
 ## Introduction
 
 A simple and small dependency manager for javascript and CSS files. All files will be combined, minified and cached. Less and Scss files are also supported and all css output is run through a auto-prefixer.
@@ -52,7 +54,9 @@ $options = array(
 define('ROOT', __DIR__); // Don't forget this! 
 
 try{
-    echo $Response = new Crecket\DependencyManager\Response($options);
+    $Response = new Crecket\DependencyManager\Response($options);
+    
+    echo $Response->getResult();
 }catch(Crecket\DependencyManager\Exception $ex){ // catch errors
     echo $ex->getTitle();
     echo '<br>';
@@ -66,7 +70,7 @@ Response takes a optional second parameter which will make sure the session stor
 
 ```
 $file_list = array('/some/js/file.js', '/another/js/files.js');
-echo $Response = new Crecket\DependencyManager\Response($options, $file_list);
+$Response = new Crecket\DependencyManager\Response($options, $file_list);
 ```
 
 #### Security
@@ -74,6 +78,6 @@ echo $Response = new Crecket\DependencyManager\Response($options, $file_list);
 To ensure only you can create a file list add a secret key. Make sure this key is secure/long enough!
 
 ```
-Loader::Secret('some_secret');
+Loader::Secret('some long secret passphrase');
 ```
 

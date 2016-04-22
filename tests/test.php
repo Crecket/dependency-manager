@@ -25,10 +25,10 @@ class testMain extends PHPUnit_Framework_TestCase
 
     public function testGetLinks()
     {
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(true), '?secret=e22e067fbcda37f27bd551138a7d7b1e7b8146c5d7653d87f526b1d60114c895&minify=true');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(false), '?secret=e22e067fbcda37f27bd551138a7d7b1e7b8146c5d7653d87f526b1d60114c895');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(true), '?secret=27b3b42627444fe2c32914059d65c075f9a39375f2a96c9b2ae858cedee6928c&minify=true');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(false), '?secret=27b3b42627444fe2c32914059d65c075f9a39375f2a96c9b2ae858cedee6928c');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(true), '?secret=3bfe9df10b476c2454285e68629432a1002e87d943c169d378b28c361e8eface&minify=true');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(false), '?secret=3bfe9df10b476c2454285e68629432a1002e87d943c169d378b28c361e8eface');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(true), '?secret=6e424af764f239830b0e706b0422318bd4572b7caeb9921b198ad6c97d82621e&minify=true');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(false), '?secret=6e424af764f239830b0e706b0422318bd4572b7caeb9921b198ad6c97d82621e');
     }
 
     public function testResponse()
@@ -36,7 +36,8 @@ class testMain extends PHPUnit_Framework_TestCase
         define('ROOT', __DIR__);
 
         $options = array(
-            'Cache' => 'cache'
+            'Cache' => ROOT.'/cache',
+            'Remote_storage' => ROOT.'/bower_components/'
         );
 
         $jsList = array(
@@ -46,6 +47,7 @@ class testMain extends PHPUnit_Framework_TestCase
 
         // test js loading/parsing
         $JsResponse = new \Crecket\DependencyManager\Response($options, $jsList);
+        $this->assertNotEmpty($JsResponse->getResult());
 
         $cssList = array(
             '/../bower_components/bootstrap/less/bootstrap.less',
@@ -55,7 +57,7 @@ class testMain extends PHPUnit_Framework_TestCase
 
         // test css loading/parsing for css, less and sass
         $CssResponse = new \Crecket\DependencyManager\Response($options, $cssList);
-
+        $this->assertNotEmpty($CssResponse->getResult());
     }
 
     // TODO Session testing
