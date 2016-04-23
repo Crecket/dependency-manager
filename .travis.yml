@@ -7,3 +7,4 @@ install:
     - composer update -o
     - npm install -g bower
     - bower install
+    - phpunit --version
