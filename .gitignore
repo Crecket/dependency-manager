@@ -4,3 +4,4 @@
 /minify.php
 /cache
 /phpunit.phar
+/tests/cache
