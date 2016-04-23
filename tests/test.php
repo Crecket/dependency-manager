@@ -27,10 +27,10 @@ class testMain extends PHPUnit_Framework_TestCase
 
     public function testGetLinks()
     {
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(true), '?secret=3bfe9df10b476c2454285e68629432a1002e87d943c169d378b28c361e8eface&minify=true');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(false), '?secret=3bfe9df10b476c2454285e68629432a1002e87d943c169d378b28c361e8eface');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(true), '?secret=6e424af764f239830b0e706b0422318bd4572b7caeb9921b198ad6c97d82621e&minify=true');
-        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(false), '?secret=6e424af764f239830b0e706b0422318bd4572b7caeb9921b198ad6c97d82621e');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(true), '?secret=ca48b5ff1fc8d475b138b336e49e0d2adc3bb11ef5546ac855045be2a17957a5&minify=true');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getCssLink(false), '?secret=ca48b5ff1fc8d475b138b336e49e0d2adc3bb11ef5546ac855045be2a17957a5');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(true), '?secret=e195b9eaeaa09cab85600a86bfb7e88b34903088146706600191355b4191af0a&minify=true');
+        $this->assertEquals(\Crecket\DependencyManager\Loader::getJsLink(false), '?secret=e195b9eaeaa09cab85600a86bfb7e88b34903088146706600191355b4191af0a');
     }
 
     public function testResponse()
