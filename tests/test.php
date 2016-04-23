@@ -37,8 +37,7 @@ class testMain extends PHPUnit_Framework_TestCase
         define('ROOT', __DIR__);
 
         $options = array(
-            'Cache' => ROOT.'/cache',
-            'Remote_storage' => ROOT.'/../cache'
+            'Cache' => ROOT.'/cache'
         );
 
         $jsList = array(

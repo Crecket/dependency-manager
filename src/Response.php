@@ -115,16 +115,6 @@ final class Response
         $this->cache = new FilesystemCache($this->options['Cache']);
 
         // Required option
-        if (empty($this->options['Remote_storage'])) {
-            throw new Exception('Remote file error', 'Missing remote file storage location');
-        } else if (!file_exists($this->options['Remote_storage'])) {
-            throw new Exception('Remote file error', 'Storage location not found');
-        }
-
-        // set remote file storage location
-        $this->remote_storage = $this->options['Remote_storage'];
-
-        // Required option
         if (!empty($this->options['CacheNameSpace'])) {
             $this->cache->setNamespace('crecket_dependency_loader');
         }
