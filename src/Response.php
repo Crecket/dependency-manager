@@ -204,7 +204,7 @@ final class Response
                 // Verify the response type
                 if ($this->response_type !== false && !isset($this->response_type[$fileinfo['file_type']])) {
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new Exception('File not supported', 'Error 500: The following file isn\'t the correct type for this request: ' . htmlspecialchars($fileinfo['path']));
+                    throw new Exception('File not supported', 'Error 500: The following file isn\'t the correct type for this request: ' . htmlspecialchars($fileinfo));
                 }
 
                 // Create new response object
@@ -212,7 +212,7 @@ final class Response
                 if ($newResponse === false) {
                     // File type isn't supported, return 500 header
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo['path']));
+                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo));
                 }
 
                 // Add response to array
@@ -223,7 +223,7 @@ final class Response
 
                 // File wasn't found, return 404 header
                 Utilities::statusCode(404, 'Not Found');
-                throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file['location']));
+                throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file));
 
             }
 
