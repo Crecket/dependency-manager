@@ -102,7 +102,7 @@ final class Response
         }
 
         // Check if minify code is enabled
-        if (isset($_GET['minify'])) {
+        if (!empty($_GET['minify'])) {
             $this->minify = true;
         }
 
@@ -117,7 +117,7 @@ final class Response
         // Required option
         if (empty($this->options['Remote_storage'])) {
             throw new Exception('Remote file error', 'Missing remote file storage location');
-        }else if(!file_exists($this->options['Remote_storage'])){
+        } else if (!file_exists($this->options['Remote_storage'])) {
             throw new Exception('Remote file error', 'Storage location not found');
         }
 
@@ -173,20 +173,15 @@ final class Response
 
             // if result is css, run the file through a auto prefixer
             if (isset($this->response_type['css'])) {
-                $contents = csscrush_string($contents, array());
+                $contents = csscrush_string($contents, array(
+                    'minify' => $this->minify
+                ));
             }
 
-            // check if minify is enabled
-            if ($this->minify) {
-                // check content type
-                if (isset($this->response_type['css'])) {
-                    // minify cs
-                    $minifier = new CSS($contents);
-                    $contents = $minifier->minify();
-                } else if (isset($this->response_type['js'])) {
-                    // minify js
-                    $contents = Minifier::minify($contents, array('flaggedComments' => false));
-                }
+            // if minfiy is true and type is js, run through JS minifier
+            if ($this->minify && isset($this->response_type['js'])) {
+                // minify js
+                $contents = Minifier::minify($contents, array('flaggedComments' => false));
             }
 
             // store in cache
@@ -211,28 +206,8 @@ final class Response
         // loop through file list
         foreach ($list as $file) {
 
-            // check if file is local or remote
-            if ($file['local'] === false) {
-
-                // new remote file handler
-                $RemoteFile = new RemoteHandler($file['location'], $this->remote_storage, $this->cache);
-
-                // get file contents
-                $RemoteFile->getContents();
-
-                // store in local file
-                $file['location'] = $RemoteFile->storeContents();
-
-                // Retrieve file info for file
-                $fileinfo = $this->fileInfo($file);
-            }else{
-
-                // Retrieve file info for file
-                $fileinfo = $this->fileInfo($file);
-
-            }
-
-            dump($fileinfo);
+            // Retrieve file info for file
+            $fileinfo = $this->fileInfo($file);
 
             if ($fileinfo !== false) {
 
@@ -278,7 +253,7 @@ final class Response
      */
     private function fileInfo($file)
     {
-        $path = (($file['location'][0] === "/") ? Constant('ROOT') . $file['location'] : Constant('ROOT') . "/" . $file['location']);
+        $path = (($file[0] === "/") ? Constant('ROOT') . $file : Constant('ROOT') . "/" . $file);
         if (file_exists($path)) {
             $data = array(
                 'path' => $path,

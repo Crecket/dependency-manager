@@ -19,65 +19,66 @@ A simple and small dependency manager for javascript and CSS files. All files wi
 ## Installation
 
 1. Install with composer
-```composer require crecket/dependency-manager ```
+    
+    `composer require crecket/dependency-manager`
 
 2. Add the twig extension to your twig view:
 
-```$twig->addExtension(new Crecket\DependencyManager\Response());```
+    `$twig->addExtension(new Crecket\DependencyManager\Response());`
 
 ## Usage
 
 Add a file to the manager
 
-```
-use Crecket\DependencyManager\Loader;
+    use Crecket\DependencyManager\Loader;
 
-Loader::addJsFile('testFile.js');
-Loader::addCssFile('testFile.css');
-```
+    Loader::addJsFile('testFile.js');
+    Loader::addCssFile('testFile.css');
+
 
 In your twig template create a script source. The first parameter is optional and enables/disables minifying your code.
 
-```<script src="/minify.php{{ getJsList(true) }}">```
+`<script src="/minify.php{{ getJsList(true) }}">`
 
 Or if you aren't using twig
 
-```<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">```
+`<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">`
 
 Now create a new file named minify.php for example and add the following line.
 
-```
-$options = array(
-    'Cache' => '/cache' // Location based on the root
-);
 
-define('ROOT', __DIR__); // Don't forget this! 
-
-try{
-    $Response = new Crecket\DependencyManager\Response($options);
+    $options = array(
+        'Cache' => '/cache' // Location based on the root
+    );
     
-    echo $Response->getResult();
-}catch(Crecket\DependencyManager\Exception $ex){ // catch errors
-    echo $ex->getTitle();
-    echo '<br>';
-    echo $ex->getMessage();
-}
-```
+    define('ROOT', __DIR__); // Don't forget this! 
+    
+    try{
+        $Response = new Crecket\DependencyManager\Response($options);
+        
+        echo $Response->getResult();
+    }catch(Crecket\DependencyManager\Exception $ex){ // catch errors
+        echo $ex->getTitle();
+        echo '<br>';
+        echo $ex->getMessage();
+    }
+
 
 ## Debugging
 
 Response takes a optional second parameter which will make sure the session storage and secret key are ignored.
 
-```
-$file_list = array('/some/js/file.js', '/another/js/files.js');
-$Response = new Crecket\DependencyManager\Response($options, $file_list);
-```
+    $file_list = array('/some/js/file.js', '/another/js/files.js');
+    $Response = new Crecket\DependencyManager\Response($options, $file_list);
 
-#### Security
+
+## Security
 
 To ensure only you can create a file list add a secret key. Make sure this key is secure/long enough!
 
-```
-Loader::Secret('some long secret passphrase');
-```
+`Loader::Secret('some long secret passphrase');`
 
+## Issues
+
+#### Font files in Css
+External font files, for example bootstrap's Glyphicons my return 404 errors because the path has changed. These can usually be fixed by copying the font files and moving them to a `/fonts` folder in your web root.

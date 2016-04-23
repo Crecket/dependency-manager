@@ -8,11 +8,13 @@ class testMain extends PHPUnit_Framework_TestCase
 
     public function testLoading()
     {
-        \Crecket\DependencyManager\Loader::addCssFiles(array(
+        Crecket\DependencyManager\Loader::addCssFiles(array(
+            '/bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss',
             '/bower_components/bootstrap/less/bootstrap.less',
             '/bower_components/test.css'
         ));
-        \Crecket\DependencyManager\Loader::addJsFiles(array(
+
+        Crecket\DependencyManager\Loader::addJsFiles(array(
             '/bower_components/jquery/dist/jquery.min.js',
             '/bower_components/bootstrap/dist/js/bootstrap.min.js'
         ));
