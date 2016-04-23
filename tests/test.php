@@ -59,7 +59,4 @@ class testMain extends PHPUnit_Framework_TestCase
         $CssResponse = new \Crecket\DependencyManager\Response($options, $cssList);
         $this->assertNotEmpty($CssResponse->getResult());
     }
-
-    // TODO Session testing
-
 }
