@@ -28,52 +28,60 @@ A simple and small dependency manager for javascript and CSS files. All files wi
 
 ## Usage
 
-Add a file to the manager
+
+### Adding new files
+
+##### addFiles($fileList, $groupName);
+
+- PARAM1:  enter a single string to a file location or a array with multiple files.
+- PARAM2:  the group name, this way you can store multiple file groups
+
 
     use Crecket\DependencyManager\Loader;
-
-    Loader::addJsFile('testFile.js'); // string
-    Loader::addJsFiles(array('testFile.js')); // array
-
-    Loader::addCssFile('testFile.css'); // string
-    Loader::addCssFile(array('testFile.css')); // array
-
-Function accepts strings and array with file locations. Second parameter sets the group for this file
-
     Loader::addFiles('testFile.css', 'cssGroupName');
-    Loader::addFiles(array('testFile.css'), 'cssGroupName2'); // different group
+    
+    // different group and multiple files this time
+    Loader::addFiles(array('testFile.css', '/some/folder/file_name.css'), 'cssGroupName2'); 
+    
+### Remove files
+    
+##### removeFiles($groupName);
 
-Remove all files for a group name
+- PARAM1: contains the file group name.
+
 
     Loader::removeFiles('cssGroupName2');
 
+### Create a url
 
-In your twig template create a script source. The first parameter is optional and enables/disables minifying your code.
+##### Twig: getFilesLink(minify, groupName)
 
-    <script src="/minify.php{{ getJsList(true) }}">
-    <link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getCssLink(true); ?>" rel="stylesheet">
+- PARAM1: Minify the files or not
+- PARAM2: Group name
 
-Or if you are using groups, use the ` getFileList($minify, $group_name)`  function
 
     <script src="/minify.php{{ getFilesLink(true, 'jsGroupName') }}">
+
+##### PHP: getFilesLink(
+
+- PARAM1: Minify the files or not
+- PARAM2: Group name
+
+
     <link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getFilesLink(true, 'cssGroupName'); ?>" rel="stylesheet">
 
 
-Youc can also load only the files for a specific group
+### Response 
 
-
-Now create a new file named minify.php for example and add the following line.
+##### Standard php example
 
     $options = array(
         // Location that the default Doctrine/FilesystemCache will use. Location is based on the root
         // Required if no custom cache object is given
-        'Cache' => '/cache',
+        'CacheLocation' => '/cache',
 
         // Optional, namespace to use for the doctrine file system cache
         'CacheNamespace'  => 'DependencyManagerNamespace',
-
-        // OR write your own cache interface, make sure it implements the Crecket\DependencyManager\CacheAdapaterInterface
-        'CacheObject' => new CustomCacheInterface()
     );
     
     define('ROOT', __DIR__); // Don't forget this! 
@@ -88,12 +96,67 @@ Now create a new file named minify.php for example and add the following line.
         echo $ex->getMessage();
     }
 
+##### Silex route example
+
+You can quite easily use the url generator in silex to create a url to this route using
+
+    <script src="{{ url('dependency_minify', {id: GetFilesHash(false, 'jsGroupExample')}) }}"></script>
+
+or without twig
+
+    <script src="/minify/<?php echo Loader::getHash(true, 'jsGroupExample'); ?>"
+
+Next create a route: 
+
+    // ID contains the hash id
+    $app->get('/minify/{id}', function ($id) use ($app) {
+    
+        // Options
+        $options = array(
+            'CacheLocation' => '/cache',
+            'CacheNamespace' => 'DependencyManagerNamespace'
+        );
+    
+        try {
+            // second parameter contains the hash id
+            $Response = new Crecket\DependencyManager\Response($options, $id);
+    
+            // Get the response data
+            $response_data = $Response->getResult();
+    
+            // Get the headers and status code for this request
+            $header_data = Crecket\DependencyManager\Utilities::getHeaders();
+    
+        } catch (Crecket\DependencyManager\Exception $ex) { // catch errors
+            // return a error
+            return new Symfony\Component\HttpFoundation\Response(
+                $ex->getTitle() . '<br>' . $ex->getMessage(),
+                500,
+                array()
+            );
+        }
+        
+        // Return content, headers and status code
+        return new Symfony\Component\HttpFoundation\Response(
+            $response_data,
+            $header_data['status_code'],
+            $header_data['headers']
+        );
+    })->bind('dependency_minify');
+
+
 ## Debugging
 
-Response takes a optional second parameter which will make sure the session storage and secret key are ignored.
+Response takes a optional second parameter which will make sure the session storage and secret key are ignored. This can be a hash id to retrieve the files stored in the session, or a direct array with files
 
     $file_list = array('/some/js/file.js', '/another/js/files.js');
     $Response = new Crecket\DependencyManager\Response($options, $file_list);
+    
+    // OR
+    
+    $file_hash = Loader::getHash($minify, $groupName);
+    $Response = new Crecket\DependencyManager\Response($options, $file_hash);
+    
 
 
 ## Security

@@ -12,25 +12,15 @@ class testMain extends PHPUnit_Framework_TestCase
 
     public function testLoading()
     {
-        Crecket\DependencyManager\Loader::addCssFiles(array(
-            '/bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss',
-            '/bower_components/bootstrap/less/bootstrap.less',
-            '/bower_components/test.css'
-        ));
-
-        Crecket\DependencyManager\Loader::addJsFiles(array(
-            '/bower_components/jquery/dist/jquery.min.js',
-            '/bower_components/bootstrap/dist/js/bootstrap.min.js'
-        ));
 
         Crecket\DependencyManager\Loader::addFiles(array(
-            '/bower_components/jquery/dist/jquery.js',
-            '/bower_components/bootstrap/dist/js/bootstrap.js'
+            '/../bower_components/jquery/dist/jquery.js',
+            '/../bower_components/bootstrap/dist/js/bootstrap.js'
         ), 'genericjs');
 
         Crecket\DependencyManager\Loader::addFiles(array(
-            '/bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss',
-            '/bower_components/bootstrap/less/bootstrap.less'
+            '/../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss',
+            '/../bower_components/bootstrap/less/bootstrap.less'
         ), 'genericcss');
 
         // test removal for group
@@ -45,20 +35,15 @@ class testMain extends PHPUnit_Framework_TestCase
     public function testGetLinks()
     {
         // TODO create better test case for link generation
-        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getCssLink(true));
-        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getCssLink(false));
-
-        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getJsLink(true));
-        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getJsLink(false));
-
         $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getFilesLink(false, 'genericjs'));
-        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getFilesLink(true, 'genericjs'));
+        $this->assertNotEmpty(\Crecket\DependencyManager\Loader::getFilesLink(true, 'genericjs2'));
     }
 
-    public function testResponse()
+    public function testDebugResponse()
     {
         $options = array(
-            'CacheLocation' => ROOT . '/cache'
+            'CacheLocation' => ROOT . '/cache',
+            'CacheNamespace' => 'CrecketDependencyManagerNamespace'
         );
 
         $jsList = array(
@@ -82,5 +67,25 @@ class testMain extends PHPUnit_Framework_TestCase
         // test css loading/parsing for css, less and sass
         $CssResponse = new \Crecket\DependencyManager\Response($options, $cssList);
         $this->assertNotEmpty($CssResponse->getResult());
+    }
+
+    public function testUidResponse()
+    {
+        $options = array(
+            'CacheLocation' => ROOT . '/cache',
+            'CacheNamespace' => 'CrecketDependencyManagerNamespace'
+        );
+
+        \Crecket\DependencyManager\Loader::addFiles(array(
+            '/../bower_components/jquery/dist/jquery.min.js',
+            '/../bower_components/bootstrap/dist/js/bootstrap.min.js'
+        ), 'generic js');
+
+        $hash_id = \Crecket\DependencyManager\Loader::getHash(false, 'genericjs');
+
+        $JsResponse = new \Crecket\DependencyManager\Response($options, $hash_id);
+        $result = $JsResponse->getResult();
+        $this->assertNotEmpty($result);
+
     }
 }

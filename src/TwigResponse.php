@@ -19,14 +19,17 @@ class TwigResponse extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('getJsLink', function ($minify = false) {
+            new \Twig_SimpleFunction('GetJsLink', function ($minify = false) {
                 return Loader::getJsLink($minify);
             }),
-            new \Twig_SimpleFunction('getCssLink', function ($minify = false) {
+            new \Twig_SimpleFunction('GetCssLink', function ($minify = false) {
                 return Loader::getCssLink($minify);
             }),
-            new \Twig_SimpleFunction('getFilesLink', function ($minify = false, $group = 'default') {
+            new \Twig_SimpleFunction('GetFilesLink', function ($minify = false, $group = 'default') {
                 return Loader::getFilesLink($minify, $group);
+            }),
+            new \Twig_SimpleFunction('GetFilesHash', function ($minify = false, $group = 'default') {
+                return Loader::getHash($minify, $group);
             }),
         );
     }

@@ -58,17 +58,40 @@ final class Response
     /**
      * Response constructor.
      * @param $options
-     * @param $input_file_list
+     * @param $input_file_data
      * @throws Exception
      */
-    public function __construct($options, $input_file_list = false)
+    public function __construct($options, $input_file_data = false)
     {
         $this->options = $options;
 
-        if ($input_file_list !== false) {
+        if ($input_file_data !== false) {
 
-            // custom file list entered
-            $file_list = $input_file_list;
+            if (is_array($input_file_data)) {
+
+                // custom file list entered
+                $file_list = $input_file_data;
+
+            } else {
+
+                if (!isset($_SESSION['crecket_dependency_manager'][$input_file_data])) {
+
+                    // Check if secret is set and if it matches the private key
+                    throw new Exception('Invalid secret', 'The secret key was not found or invalid.', 403);
+
+                } else {
+
+                    // retrieve file list from session
+                    $file_list = $_SESSION['crecket_dependency_manager'][$input_file_data]['files'];
+
+                    // minify option
+                    $this->minify = $_SESSION['crecket_dependency_manager'][$input_file_data]['minify'];
+
+                    // set secret key
+                    $this->secret = $input_file_data;
+                }
+
+            }
 
         } else {
 
@@ -87,13 +110,16 @@ final class Response
             } else {
 
                 // retrieve file list from session
-                $file_list = $_SESSION['crecket_dependency_manager'][$this->secret];
+                $file_list = $_SESSION['crecket_dependency_manager'][$this->secret]['files'];
+
+                // minify option
+                $this->minify = $_SESSION['crecket_dependency_manager'][$this->secret]['minify'];
 
             }
         }
 
-        // Check if minify code is enabled
-        if (!empty($_GET['minify'])) {
+        // Check if minify code is enabled, overrules minify options in the session
+        if (!empty($this->options['minify'])) {
             $this->minify = true;
         }
 
@@ -141,7 +167,7 @@ final class Response
         // Check the caching headers
         $this->setHeaders();
 
-        if($send_headers){
+        if ($send_headers) {
             // Send headers
             Utilities::sendHeaders();
         }

@@ -6,7 +6,8 @@ final class Utilities
 {
 
     private static $headers = array();
-    private static $statusCodes = array();
+    private static $statusCode = 200;
+    private static $statusMessage = "";
 
 
     /**
@@ -15,7 +16,8 @@ final class Utilities
      */
     public static function statusCode($code, $message)
     {
-        self::$statusCodes[$code] = $message;
+        self::$statusCode = $code;
+        self::$statusMessage = $message;
     }
 
     /**
@@ -36,9 +38,8 @@ final class Utilities
             foreach (self::$headers as $key => $header) {
                 header($key . ": " . $header);
             }
-            foreach (self::$statusCodes as $key => $header) {
-                header("{$_SERVER['SERVER_PROTOCOL']} {$key} {$header}");
-            }
+
+            header("{$_SERVER['SERVER_PROTOCOL']} " . self::$statusCode . " " . self::$statusMessage);
         }
     }
 
@@ -47,7 +48,7 @@ final class Utilities
      */
     public static function getHeaders()
     {
-        return array('headers' => self::$headers, 'status' => self::$statusCodes);
+        return array('headers' => self::$headers, 'status_code' => self::$statusCode, 'status_message' => self::$statusMessage);
     }
 
     /**
