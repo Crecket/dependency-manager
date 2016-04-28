@@ -35,12 +35,6 @@ final class Response
     private $cache;
 
     /**
-     * @var bool
-     * Location to store new remote files
-     */
-    private $remote_storage = false;
-
-    /**
      * @var bool|array
      * Contains the current response type, used to prevent js/css mixing in one file
      */
@@ -125,7 +119,6 @@ final class Response
         // Check if file_data is correct
         if ($this->file_data === false) {
             Utilities::sendHeaders();
-            exit;
         }
 
     }

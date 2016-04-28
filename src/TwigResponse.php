@@ -25,6 +25,9 @@ class TwigResponse extends \Twig_Extension
             new \Twig_SimpleFunction('getCssLink', function ($minify = false) {
                 return Loader::getCssLink($minify);
             }),
+            new \Twig_SimpleFunction('getFilesLink', function ($minify = false, $group = 'default') {
+                return Loader::getFilesLink($minify, $group);
+            }),
         );
     }
 

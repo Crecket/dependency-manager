@@ -32,17 +32,35 @@ Add a file to the manager
 
     use Crecket\DependencyManager\Loader;
 
-    Loader::addJsFile('testFile.js');
-    Loader::addCssFile('testFile.css');
+    Loader::addJsFile('testFile.js'); // string
+    Loader::addJsFiles(array('testFile.js')); // array
+
+    Loader::addCssFile('testFile.css'); // string
+    Loader::addCssFile(array('testFile.css')); // array
+
+Function accepts strings and array with file locations. Second parameter sets the group for this file
+
+    Loader::addFiles('testFile.css', 'cssGroupName');
+    Loader::addFiles(array('testFile.css'), 'cssGroupName2'); // different group
+
+Remove all files for a group name
+
+    Loader::removeFiles('cssGroupName2');
 
 
 In your twig template create a script source. The first parameter is optional and enables/disables minifying your code.
 
-`<script src="/minify.php{{ getJsList(true) }}">`
+    <script src="/minify.php{{ getJsList(true) }}">
+    <link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getCssLink(true); ?>" rel="stylesheet">
 
-Or if you aren't using twig
+Or if you are using groups, use the ` getFileList($minify, $group_name)`  function
 
-`<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::GetCssLink(true); ?>" rel="stylesheet">`
+    <script src="/minify.php{{ getFilesLink(true, 'jsGroupName') }}">
+    <link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getFilesLink(true, 'cssGroupName'); ?>" rel="stylesheet">
+
+
+Youc can also load only the files for a specific group
+
 
 Now create a new file named minify.php for example and add the following line.
 
