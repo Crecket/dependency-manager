@@ -64,9 +64,16 @@ Youc can also load only the files for a specific group
 
 Now create a new file named minify.php for example and add the following line.
 
-
     $options = array(
-        'Cache' => '/cache' // Location based on the root
+        // Location that the default Doctrine/FilesystemCache will use. Location is based on the root
+        // Required if no custom cache object is given
+        'Cache' => '/cache',
+
+        // Optional, namespace to use for the doctrine file system cache
+        'CacheNamespace'  => 'DependencyManagerNamespace',
+
+        // OR write your own cache interface, make sure it implements the Crecket\DependencyManager\CacheAdapaterInterface
+        'CacheObject' => new CustomCacheInterface()
     );
     
     define('ROOT', __DIR__); // Don't forget this! 
@@ -80,7 +87,6 @@ Now create a new file named minify.php for example and add the following line.
         echo '<br>';
         echo $ex->getMessage();
     }
-
 
 ## Debugging
 

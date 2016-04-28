@@ -1,7 +1,11 @@
 <?php
 date_default_timezone_set('Europe/Amsterdam');
 
-require __DIR__ . '/../vendor/autoload.php';
+define('ROOT', __DIR__);
+
+require ROOT . '/../vendor/autoload.php';
+
+require ROOT . '/testCacheInterface.php';
 
 class testMain extends PHPUnit_Framework_TestCase
 {
@@ -53,10 +57,8 @@ class testMain extends PHPUnit_Framework_TestCase
 
     public function testResponse()
     {
-        define('ROOT', __DIR__);
-
         $options = array(
-            'Cache' => ROOT . '/cache'
+            'CacheLocation' => ROOT . '/cache'
         );
 
         $jsList = array(
@@ -64,9 +66,12 @@ class testMain extends PHPUnit_Framework_TestCase
             '/../bower_components/bootstrap/dist/js/bootstrap.min.js'
         );
 
-        // test js loading/parsing
         $JsResponse = new \Crecket\DependencyManager\Response($options, $jsList);
         $this->assertNotEmpty($JsResponse->getResult());
+
+        $options = array(
+            'CacheObject' => new testCacheInterface('/cache')
+        );
 
         $cssList = array(
             '/../bower_components/bootstrap/less/bootstrap.less',

@@ -32,7 +32,7 @@ final class Utilities
      */
     public static function sendHeaders()
     {
-        if(!headers_sent()){
+        if (!headers_sent()) {
             foreach (self::$headers as $key => $header) {
                 header($key . ": " . $header);
             }
@@ -42,9 +42,15 @@ final class Utilities
         }
     }
 
+    /**
+     * @return array
+     */
+    public static function getHeaders()
+    {
+        return array('headers' => self::$headers, 'status' => self::$statusCodes);
+    }
 
     /**
-     * // TODO secure this function
      * @param $path
      * @return string
      */

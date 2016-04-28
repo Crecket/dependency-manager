@@ -2,10 +2,7 @@
 
 Namespace Crecket\DependencyManager;
 
-use Doctrine\Common\Cache\FilesystemCache;
-use MatthiasMullie\Minify\CSS;
 use JShrink\Minifier;
-
 
 final class Response
 {
@@ -100,40 +97,54 @@ final class Response
             $this->minify = true;
         }
 
-        // Required option
-        if (empty($this->options['Cache'])) {
-            throw new Exception('Caching error', 'Missing caching target location');
-        }
+        // check if custom interface is given
+        if (empty($this->options['CacheObject'])) {
 
-        // Create cache element
-        $this->cache = new FilesystemCache($this->options['Cache']);
+            // Required option if no custom interface is given
+            if (empty($this->options['CacheLocation'])) {
+                throw new Exception('Caching error', 'Missing caching target location for default cache interface');
+            }
 
-        // Required option
-        if (!empty($this->options['CacheNameSpace'])) {
-            $this->cache->setNamespace('crecket_dependency_loader');
+            // Create cache element
+            $this->cache = new \Doctrine\Common\Cache\FilesystemCache($this->options['CacheLocation']);
+
+            // Interface for default cache setup
+            if (!empty($this->options['CacheNameSpace'])) {
+                $this->cache->setNamespace('crecket_dependency_loader');
+            }
+
+        } else {
+
+            // check if a custom cache object is set
+            if (!$this->options['CacheObject'] instanceof CacheAdapterInterface) {
+                throw new Exception('Caching error', 'Custom cache interface does not implement the Crecket\\DependencyManager\\CacheAdapterInterface');
+            }
+
+            // set the cache object to this namespace
+            $this->cache = $this->options['CacheObject'];
+
         }
 
         // Parse file list
         $this->file_data = $this->fileList($file_list);
-
-        // Check if file_data is correct
-        if ($this->file_data === false) {
-            Utilities::sendHeaders();
-        }
-
     }
 
     /**
+     * @param bool $send_headers
      * @return array|false|mixed
      */
-    public function getResult()
+    public function getResult($send_headers = true)
     {
         // Get the file contents
         $contents = $this->getCollection();
 
-        // Send headers
+        // Check the caching headers
         $this->setHeaders();
-        Utilities::sendHeaders();
+
+        if($send_headers){
+            // Send headers
+            Utilities::sendHeaders();
+        }
 
         return $contents;
     }
@@ -315,6 +326,7 @@ final class Response
             Utilities::setHeader('Pragma', 'cache');
             Utilities::setHeader('Last-Modified', date('D, d M Y H:i:s', $lastModifiedDate) . ' GMT');
             Utilities::setHeader('Expires', date('D, d M Y H:i:s', time() + 60 * 60 * 24 * 90) . ' GMT');
+            Utilities::statusCode(200, 'OK');
         }
         return $this;
     }
