@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/Crecket/dependency-manager.svg?branch=master)](https://travis-ci.org/Crecket/dependency-manager) [![Latest Release](https://img.shields.io/github/release/crecket/Dependency-manager.svg)](https://github.com/Crecket/dependency-manager)
 
 ## Introduction
-
 A simple and small dependency manager for javascript and CSS files. All files will be combined, minified and cached. Less and Scss files are also supported and all css output is run through a auto-prefixer.
 
 ## Requirements
