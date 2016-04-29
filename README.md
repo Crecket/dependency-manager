@@ -35,13 +35,14 @@ A simple and small dependency manager for javascript and CSS files. All files wi
 - PARAM1:  enter a single string to a file location or a array with multiple files.
 - PARAM2:  the group name, this way you can store multiple file groups
 
+```
+use Crecket\DependencyManager\Loader;
+Loader::addFiles('testFile.css', 'cssGroupName');
 
-    use Crecket\DependencyManager\Loader;
-    Loader::addFiles('testFile.css', 'cssGroupName');
-    
-    // different group and multiple files this time
-    Loader::addFiles(array('testFile.css', '/some/folder/file_name.css'), 'cssGroupName2'); 
-    
+// different group and multiple files this time
+Loader::addFiles(array('testFile.css', '/some/folder/file_name.css'), 'cssGroupName2');
+```
+
 ### Remove files
     
 ##### removeFiles($groupName);
