@@ -59,14 +59,17 @@ Loader::addFiles(array('testFile.css', '/some/folder/file_name.css'), 'cssGroupN
 - PARAM1: Minify the files or not
 - PARAM2: Group name
 
-`<script src="/minify.php{{ getFilesLink(true, 'jsGroupName') }}">`
+
+    <script src="/minify.php{{ getFilesLink(true, 'jsGroupName') }}">
+
 
 ##### PHP: getFilesLink(
 
 - PARAM1: Minify the files or not
 - PARAM2: Group name
 
-`<link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getFilesLink(true, 'cssGroupName'); ?>" rel="stylesheet">`
+
+    <link href="/minify.php<?php echo Crecket\DependencyManager\Loader::getFilesLink(true, 'cssGroupName'); ?>" rel="stylesheet">
 
 
 ### Response 
