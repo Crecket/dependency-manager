@@ -62,6 +62,7 @@ A simple and small dependency manager for javascript and CSS files. All files wi
 
     <script src="/minify.php{{ getFilesLink(true, 'jsGroupName') }}">
 
+
 ##### PHP: getFilesLink(
 
 - PARAM1: Minify the files or not
