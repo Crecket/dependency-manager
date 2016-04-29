@@ -1,6 +1,6 @@
 # dependency-manager
 
-[![Build Status](https://travis-ci.org/Crecket/dependency-manager.svg?branch=develop)](https://travis-ci.org/Crecket/dependency-manager) [![Latest Release](https://img.shields.io/github/release/crecket/Dependency-manager.svg)](https://github.com/Crecket/dependency-manager)
+[![Build Status](https://travis-ci.org/Crecket/dependency-manager.svg?branch=master)](https://travis-ci.org/Crecket/dependency-manager) [![Latest Release](https://img.shields.io/github/release/crecket/Dependency-manager.svg)](https://github.com/Crecket/dependency-manager)
 
 ## Introduction
 
