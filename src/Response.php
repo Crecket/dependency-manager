@@ -242,7 +242,7 @@ final class Response
                 if ($newResponse === false) {
                     // File type isn't supported, return 500 header
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo));
+                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo['path']));
                 }
 
                 // Add response to array
