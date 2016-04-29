@@ -26,7 +26,6 @@ class Less implements Type
      */
     public function getFile()
     {
-        // TODO use caching from plugin instead of custom caching to avoid import errors
         // Create less parser
         $parser = new \Less_Parser();
 

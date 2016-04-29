@@ -321,9 +321,17 @@ final class Response
                 break;
             case 'js':
                 $this->response_type = array(
-                    'js' => true
+                    'js' => true,
+                    'coffee' => true
                 );
                 return new Types\Js($file_info);
+                break;
+            case 'coffee':
+                $this->response_type = array(
+                    'js' => true,
+                    'coffee' => true
+                );
+                return new Types\Coffee($file_info);
                 break;
         }
         return false;
