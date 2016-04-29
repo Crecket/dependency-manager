@@ -16,8 +16,7 @@
     "tedivm/jshrink": "^1.1",
     "twig/twig": "^1.23",
     "oyejorge/less.php": "v1.7.0.10",
-    "css-crush/css-crush": "*",
-    "coffeescript/coffeescript": "^1.3"
+    "css-crush/css-crush": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "*"
