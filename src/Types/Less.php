@@ -35,13 +35,16 @@ class Less implements Type
             $parser->parseFile($this->file['path'], '/');
 
             // Turn less into css
-            $css = $parser->getCss();
+            $contents = $parser->getCss();
         } catch (\Exception $e) {
             return false;
         }
 
+        // fix absolute paths
+        $contents = str_replace(array('../'), str_replace(ROOT, "", dirname($this->file['path'])) . '/../', $contents);
+
         // return css
-        return $css;
+        return $contents;
     }
 
 }

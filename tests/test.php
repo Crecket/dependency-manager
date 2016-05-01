@@ -15,8 +15,7 @@ class testMain extends PHPUnit_Framework_TestCase
 
         Crecket\DependencyManager\Loader::addFiles(array(
             '/../bower_components/jquery/dist/jquery.js',
-            '/../bower_components/bootstrap/dist/js/bootstrap.js',
-            'js/test.coffee'
+            '/../bower_components/bootstrap/dist/js/bootstrap.js'
         ), 'genericjs');
 
         Crecket\DependencyManager\Loader::addFiles(array(
@@ -48,8 +47,7 @@ class testMain extends PHPUnit_Framework_TestCase
         );
 
         $jsList = array(
-            '/../bower_components/jquery/dist/jquery.min.js',
-            'js/test.coffee'
+            '/../bower_components/jquery/dist/jquery.min.js'
         );
 
         $JsResponse = new \Crecket\DependencyManager\Response($options, $jsList);
@@ -79,8 +77,7 @@ class testMain extends PHPUnit_Framework_TestCase
 
         \Crecket\DependencyManager\Loader::addFiles(array(
             '/../bower_components/jquery/dist/jquery.min.js',
-            '/../bower_components/bootstrap/dist/js/bootstrap.min.js',
-            'js/test.coffee'
+            '/../bower_components/bootstrap/dist/js/bootstrap.min.js'
         ), 'generic js');
 
         $hash_id = \Crecket\DependencyManager\Loader::getHash(false, 'genericjs');

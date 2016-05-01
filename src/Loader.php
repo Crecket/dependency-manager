@@ -5,8 +5,6 @@ Namespace Crecket\DependencyManager;
 class Loader
 {
 
-    private static $jsFiles = array();
-    private static $cssFiles = array();
     private static $files = array();
 
     private static $secret = false;

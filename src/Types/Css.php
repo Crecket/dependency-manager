@@ -27,7 +27,12 @@ class Css implements Type
     public function getFile()
     {
         // No point in storing in cache since no parsing is done
-        return Utilities::getFile($this->file['path']);
+        $contents = Utilities::getFile($this->file['path']);
+
+        // fix absolute paths
+        $contents = str_replace(array('../'), str_replace(ROOT, "", dirname($this->file['path'])) . '/../', $contents);
+
+        return $contents;
     }
 
 }
