@@ -47,7 +47,8 @@ class testMain extends PHPUnit_Framework_TestCase
         );
 
         $jsList = array(
-            '/../bower_components/jquery/dist/jquery.min.js'
+            '/../bower_components/jquery/dist/jquery.min.js',
+            '/../bower_components/bootstrap/dist/js/bootstrap.js'
         );
 
         $JsResponse = new \Crecket\DependencyManager\Response($options, $jsList);
