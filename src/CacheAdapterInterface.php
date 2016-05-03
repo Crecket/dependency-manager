@@ -22,5 +22,5 @@ interface CacheAdapterInterface
      * @param $expires
      * @return mixed
      */
-    public function save($tag, $data, $expires);
+    public function save($tag, $data, $expires = 0);
 }

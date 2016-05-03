@@ -181,34 +181,59 @@ final class Response
      */
     public function getCollection()
     {
-
         if ($this->cache->contains($this->file_data['hash'])) {
-            return $this->cache->fetch($this->file_data['hash']);
-        } else {
-            // File changed or not cached
-            $contents = "";
+            // On default we don't need to re-compile
+            $compile_required = false;
+
+            // get file info for all files
             foreach ($this->file_data['list'] as $file) {
-                $contents .= $file->getFile() . "\n"; // New line to avoid comments cutting off code when combining files
+                $file_info = $file->getFileInfo();
+
+                // check if a parsed_file list is stored
+                if ($file_info['parsed_files'] !== false) {
+
+                    // check all parsed fields if they still exists/have changed
+                    foreach ($file_info['parsed_files'] as $parsed_file => $parsed_file_time) {
+
+                        if (!file_exists($parsed_file) || filemtime($parsed_file) > $parsed_file_time) {
+                            // file does not exist or filemtime is different
+                            $compile_required = true;
+                        }
+                    }
+                } else if ($file->requiresFileList() === true) {
+                    // check if a file list should be stored, if true we will need to recompile
+                    $compile_required = true;
+                }
             }
 
-            // if result is css, run the file through a auto prefixer
-            if (isset($this->response_type['css'])) {
-                $contents = csscrush_string($contents, array(
-                    'minify' => $this->minify
-                ));
+            // if no compile is required, return the cached file
+            if ($compile_required === false) {
+                return $this->cache->fetch($this->file_data['hash']);
             }
+        }
 
-            // if minfiy is true and type is js, run through JS minifier
-            if ($this->minify && isset($this->response_type['js'])) {
+        // File changed or not cached
+        $contents = "";
+        foreach ($this->file_data['list'] as $file) {
+            $contents .= $file->getFile() . "\n"; // New line to avoid comments cutting off code when combining files
+        }
+
+        // if result is css, run the file through a auto prefixer
+        if (isset($this->response_type['css'])) {
+            $contents = csscrush_string($contents, array(
+                'minify' => $this->minify
+            ));
+        } else if (isset($this->response_type['js'])) {
+            if ($this->minify) {
                 // minify js
                 $contents = Minifier::minify($contents, array('flaggedComments' => false));
             }
-
-            // store in cache
-            $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
-
-            return $contents;
         }
+
+        // store in cache
+        $this->cache->save($this->file_data['hash'], $contents, 60 * 60 * 24 * 30);
+
+        return $contents;
     }
 
     /**
@@ -242,7 +267,7 @@ final class Response
                 if ($newResponse === false) {
                     // File type isn't supported, return 500 header
                     Utilities::statusCode(500, 'Internal Server Error');
-                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo));
+                    throw new Exception('File not supported', 'Error 500: The following file is not supported: ' . htmlspecialchars($fileinfo['path']));
                 }
 
                 // Add response to array
@@ -256,7 +281,6 @@ final class Response
                 throw new Exception('Not Found', '404 File not found: ' . htmlspecialchars($file));
 
             }
-
         }
 
         if ($this->minify) {
@@ -280,6 +304,10 @@ final class Response
                 'last_edit' => filemtime($path),
                 'file_type' => pathinfo($path, PATHINFO_EXTENSION)
             );
+
+            $data['hash'] = hash('sha256', serialize($data));
+            $data['parsed_files'] = $this->cache->fetch($data['hash'] . "parsed_files");
+
             if ($this->last_modified === false || $data['last_edit'] < $this->last_modified) {
                 $this->last_modified = $data['last_edit'];
             }
@@ -301,7 +329,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Css($file_info);
+                return new Types\Css($file_info, $this->cache);
                 break;
             case 'scss':
                 $this->response_type = array(
@@ -309,7 +337,7 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Scss($file_info);
+                return new Types\Scss($file_info, $this->cache);
                 break;
             case 'less':
                 $this->response_type = array(
@@ -317,13 +345,13 @@ final class Response
                     'less' => true,
                     'scss' => true
                 );
-                return new Types\Less($file_info);
+                return new Types\Less($file_info, $this->cache);
                 break;
             case 'js':
                 $this->response_type = array(
                     'js' => true
                 );
-                return new Types\Js($file_info);
+                return new Types\Js($file_info, $this->cache);
                 break;
         }
         return false;

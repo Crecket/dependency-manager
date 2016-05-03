@@ -34,7 +34,7 @@ class testCacheInterface implements Crecket\DependencyManager\CacheAdapterInterf
      * @param $expires
      * @return mixed
      */
-    public function save($tag, $data, $expires)
+    public function save($tag, $data, $expires = 0)
     {
         return $this->cache->save($tag, $data, $expires);
     }

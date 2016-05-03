@@ -35,10 +35,11 @@ final class Utilities
     public static function sendHeaders()
     {
         if (!headers_sent()) {
+            // Headers
             foreach (self::$headers as $key => $header) {
                 header($key . ": " . $header);
             }
-
+            // Status code header
             header("{$_SERVER['SERVER_PROTOCOL']} " . self::$statusCode . " " . self::$statusMessage);
         }
     }
