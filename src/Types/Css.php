@@ -12,8 +12,9 @@ class Css implements Type
     /**
      * Css constructor.
      * @param $file
+     * @param $cache
      */
-    public function __construct($file)
+    public function __construct($file, $cache)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
@@ -33,6 +34,22 @@ class Css implements Type
         $contents = str_replace(array('../'), str_replace(ROOT, "", dirname($this->file['path'])) . '/../', $contents);
 
         return $contents;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFileInfo()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return bool
+     */
+    public function requiresFileList()
+    {
+        return false;
     }
 
 }

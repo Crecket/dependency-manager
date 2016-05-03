@@ -8,15 +8,18 @@ class Less implements Type
 {
 
     private $file;
+    private $cache;
 
     /**
      * Less constructor.
      * @param $file
+     * @param $cache
      */
-    public function __construct($file)
+    public function __construct($file, $cache)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
+        $this->cache = $cache;
 
         return $this;
     }
@@ -36,6 +39,19 @@ class Less implements Type
 
             // Turn less into css
             $contents = $parser->getCss();
+
+            // get all parsed files
+            $parsed_files = $parser::AllParsedFiles();
+
+            // reformat to make them the same format as the scss result parsed files list
+            $new_list = array();
+            foreach ($parsed_files as $parse_file) {
+                $new_list[$parse_file] = filemtime($parse_file);
+            }
+
+            // store the new list
+            $this->cache->save($this->file['hash'] . "parsed_files", $new_list);
+
         } catch (\Exception $e) {
             return false;
         }
@@ -45,6 +61,22 @@ class Less implements Type
 
         // return css
         return $contents;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFileInfo()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return bool
+     */
+    public function requiresFileList()
+    {
+        return true;
     }
 
 }

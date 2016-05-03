@@ -101,7 +101,6 @@ try{
 ```
 
 ##### Silex route example
-
 You can quite easily use the url generator in silex to create a url to this route using
 
 ```
@@ -155,7 +154,6 @@ $app->get('/minify/{id}', function ($id) use ($app) {
 ```
 
 ## Debugging
-
 Response takes a optional second parameter which will make sure the session storage and secret key are ignored. This can be a hash id to retrieve the files stored in the session, or a direct array with files
 
 ```
@@ -169,7 +167,6 @@ $Response = new Crecket\DependencyManager\Response($options, $file_hash);
 ```
 
 ## Security
-
 To ensure only you can create a file list add a secret key. Make sure this key is secure/long enough!
 
 ```

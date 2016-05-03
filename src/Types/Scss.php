@@ -9,15 +9,18 @@ class Scss implements Type
 {
 
     private $file;
+    private $cache;
 
     /**
      * Scss constructor.
      * @param $file
+     * @param $cache
      */
-    public function __construct($file)
+    public function __construct($file, $cache)
     {
         Utilities::setHeader('Content-Type', 'text/css');
         $this->file = $file;
+        $this->cache = $cache;
 
         return $this;
     }
@@ -42,9 +45,28 @@ class Scss implements Type
         // fix absolute file paths
         $contents = str_replace(array('../'), str_replace(ROOT, "", dirname($this->file['path'])) . '/../', $contents);
 
+        // get parsed files and store in cache
+        $this->cache->save($this->file['hash'] . "parsed_files", $scss->getParsedFiles());
+
         // return css
         return $contents;
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFileInfo()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return bool
+     */
+    public function requiresFileList()
+    {
+        return true;
     }
 
 }
