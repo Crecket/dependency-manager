@@ -3,6 +3,7 @@
 Namespace Crecket\DependencyManager;
 
 use JShrink\Minifier;
+use MatthiasMullie\Minify\CSS;
 
 final class Response
 {
@@ -219,10 +220,15 @@ final class Response
         }
 
         // if result is css, run the file through a auto prefixer
-        if (isset($this->response_type['css'])) {
-            $contents = csscrush_string($contents, array(
-                'minify' => $this->minify
-            ));
+        if (isset($this->response_type['css']) && $this->minify) {
+            //create new minifier
+            $minifier = new CSS();
+
+            // add contents to the minfier
+            $minifier->add($contents);
+
+            // get results
+            $contents = $minifier->minify();
         } else if (isset($this->response_type['js'])) {
             if ($this->minify) {
                 // minify js
